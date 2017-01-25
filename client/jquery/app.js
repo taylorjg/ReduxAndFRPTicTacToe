@@ -16,11 +16,12 @@ const COMPUTER_PLAYER = 2;
 const STATE_NO_GAME_IN_PROGRESS = 0;
 const STATE_HUMAN_MOVE = 1;
 const STATE_COMPUTER_MOVE = 2;
+const STATE_WEB_SERVICE_ERROR = 3;
 
-const HIGHLIGHT_PLAYER1_WIN = 'highlightPlayer1Win';
-const HIGHLIGHT_PLAYER2_WIN = 'highlightPlayer2Win';
-const HIGHLIGHT_DRAW = 'highlightDraw';
-const ALL_HIGHLIGHTS = `${HIGHLIGHT_PLAYER1_WIN} ${HIGHLIGHT_PLAYER2_WIN} ${HIGHLIGHT_DRAW}`;
+const HIGHLIGHT_WIN = 'win';
+const HIGHLIGHT_LOSE = 'lose';
+const HIGHLIGHT_DRAW = 'draw';
+const ALL_HIGHLIGHTS = `${HIGHLIGHT_WIN} ${HIGHLIGHT_LOSE} ${HIGHLIGHT_DRAW}`;
 
 let state = STATE_NO_GAME_IN_PROGRESS;
 let $cellElements;
@@ -39,6 +40,7 @@ $(document).ready(() => {
     $errorPanel = $('#errorPanel');
     $errorMessage = $('#errorMessage');
     $startButton = $('#startButton').click(start);
+    $('#retryButton').click(makeComputerMove);
     reset();
 });
 
@@ -81,7 +83,6 @@ function setStateHumanMove() {
 function setStateComputerMove() {
     state = STATE_COMPUTER_MOVE;
     setInstructionMessageWithSpinner(PLAYER2_TURN_MESSAGE);
-    clearErrorMessage();
 }
 
 function setStateGameOver() {
@@ -90,21 +91,18 @@ function setStateGameOver() {
     showStartButton();
 }
 
+function setStateWebServiceError() {
+    state = STATE_WEB_SERVICE_ERROR;
+}
+
 function makeHumanMove() {
-    if (state === STATE_COMPUTER_MOVE) {
-        return;
-    }
-    if (state === STATE_NO_GAME_IN_PROGRESS) {
-        if (startHelper() === COMPUTER_PLAYER) {
-            return;
+    if (state === STATE_HUMAN_MOVE) {
+        const $cellElement = $(this);
+        if (getCell($cellElement) === EMPTY) {
+            setCell($cellElement, player1Piece);
+            makeComputerMove();
         }
     }
-    const $cellElement = $(this);
-    if (getCell($cellElement) !== EMPTY) {
-        return;
-    }
-    setCell($cellElement, player1Piece);
-    makeComputerMove();
 }
 
 function makeComputerMove() {
@@ -134,14 +132,15 @@ function makeComputerMove() {
 }
 
 function handleComputerMoveResponse(state) {
+    clearErrorMessage();
     updateBoardFromString(state.board);
     if (state.outcome) {
         switch (state.outcome) {
             case HUMAN_PLAYER:
-                highlightCells(state.winningLine, HIGHLIGHT_PLAYER1_WIN);
+                highlightCells(state.winningLine, HIGHLIGHT_WIN);
                 break;
             case COMPUTER_PLAYER:
-                highlightCells(state.winningLine, HIGHLIGHT_PLAYER2_WIN);
+                highlightCells(state.winningLine, HIGHLIGHT_LOSE);
                 break;
             default:
                 highlightCells([0,1,2,3,4,5,6,7,8], HIGHLIGHT_DRAW);
@@ -152,6 +151,7 @@ function handleComputerMoveResponse(state) {
 }
 
 function handleComputerMoveError(xhr) {
+    setStateWebServiceError();
     const statusText = xhr.statusText;
     const statusCode = xhr.status ? `(${xhr.status})` : '';
     if (statusText && statusText !== 'error') {

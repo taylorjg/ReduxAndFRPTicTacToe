@@ -1,3 +1,7 @@
+#errorPanel {
+    margin-top: 20px;
+}
+
 #board {
     margin-bottom: 20px;
 }
@@ -24,14 +28,14 @@
     border-right: 2px solid #000;
 }
 
-.highlightPlayer1Win {
+.win {
     color: green;
 }
 
-.highlightPlayer2Win {
+.lose {
     color: red;
 }
 
-.highlightDraw {
+.draw {
     color: #FFBF00;
 }
