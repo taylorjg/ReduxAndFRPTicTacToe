@@ -10,12 +10,10 @@ const LINES = [
     [0, 4, 8],
     [2, 4, 6]
 ];
-const PLAYER1_WIN = 1;
-const PLAYER2_WIN = 2;
-const DRAW = 3;
+const OUTCOME_PLAYER1_WIN = 1;
+const OUTCOME_PLAYER2_WIN = 2;
+const OUTCOME_DRAW = 3;
 const BOARD_UNCHANGED = undefined;
-const GAME_IS_OVER = true;
-const GAME_IS_NOT_OVER = false;
 
 exports.computerMove = state =>
     checkForWinOrDraw(state) ||
@@ -30,11 +28,11 @@ const checkForWinOrDraw = state => {
 
 const tryToWin = state =>
     makeMoveOnLineWithTwoSamePiecesAndOneEmpty(state, state.player2Piece, (newBoard, winningLine) =>
-        makeNewState(state, newBoard, GAME_IS_OVER, PLAYER2_WIN, winningLine));
+        makeNewState(state, newBoard, OUTCOME_PLAYER2_WIN, winningLine));
 
 const tryToBlock = state => {
     const newState = makeMoveOnLineWithTwoSamePiecesAndOneEmpty(state, state.player1Piece, newBoard =>
-        makeNewState(state, newBoard, GAME_IS_NOT_OVER));
+        makeNewState(state, newBoard));
     return newState ? checkForWinOrDraw(newState) || newState : null;
 };
 
@@ -42,7 +40,7 @@ const makeRandomMove = state => {
     const unoccupiedIndices = getUnoccupiedIndices(state);
     const randomChoice = getRandomIntInclusive(0, unoccupiedIndices.length - 1);
     const newBoard = setCharAt(state.board, state.player2Piece, unoccupiedIndices[randomChoice]);
-    const newState = makeNewState(state, newBoard, GAME_IS_NOT_OVER);
+    const newState = makeNewState(state, newBoard);
     return checkForWinOrDraw(newState) || newState;
 };
 
@@ -61,9 +59,9 @@ const checkForWin = (state, line) => {
     const pieces = line.map(boardIndex => state.board[boardIndex]).join('');
     switch (pieces) {
         case state.player1Piece.repeat(3):
-            return makeNewState(state, BOARD_UNCHANGED, GAME_IS_OVER, PLAYER1_WIN, line);
+            return makeNewState(state, BOARD_UNCHANGED, OUTCOME_PLAYER1_WIN, line);
         case state.player2Piece.repeat(3):
-            return makeNewState(state, BOARD_UNCHANGED, GAME_IS_OVER, PLAYER2_WIN, line);
+            return makeNewState(state, BOARD_UNCHANGED, OUTCOME_PLAYER2_WIN, line);
         default:
             return null;
     }
@@ -71,7 +69,7 @@ const checkForWin = (state, line) => {
 
 const checkForDraw = state =>
     (Array.from(state.board)).every(piece => isOccupied(state, piece))
-        ? makeNewState(state, BOARD_UNCHANGED, GAME_IS_OVER, DRAW)
+        ? makeNewState(state, BOARD_UNCHANGED, OUTCOME_DRAW)
         : null;
 
 const getUnoccupiedIndices = state =>
@@ -91,14 +89,13 @@ const setCharAt = (s, ch, index) => {
     return chs.join('');
 };
 
-const makeNewState = (oldState, newBoard, gameOver, winningPlayer, winningLine) => {
+const makeNewState = (oldState, newBoard, outcome, winningLine) => {
     let newState = {
         board: newBoard === BOARD_UNCHANGED ? oldState.board : newBoard,
         player1Piece: oldState.player1Piece,
-        player2Piece: oldState.player2Piece,
-        gameOver
+        player2Piece: oldState.player2Piece
     };
-    if (winningPlayer) newState.winningPlayer = winningPlayer;
+    if (outcome) newState.outcome = outcome;
     if (winningLine) newState.winningLine = winningLine;
     return newState;
 };

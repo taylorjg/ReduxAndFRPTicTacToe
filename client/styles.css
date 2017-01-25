@@ -1,32 +1,37 @@
-table td {
+#board {
+    margin-bottom: 20px;
+}
+
+#board td {
     width: 100px;
     height: 100px;
-    font-size: 32pt;
+    font-size: 48pt;
+    font-family: Courier New, Courier, monospace;
     vertical-align: middle;
     text-align: center;
 }
 
-table {
+#board table {
     margin-top: 10px;
     margin-bottom: 10px;
 }
 
-.thickBottom td {
+#board .thickBottom td {
     border-bottom: 2px solid #000;
 }
 
-.thickRight {
+#board .thickRight {
     border-right: 2px solid #000;
 }
 
-.highlight {
+.highlightPlayer1Win {
+    color: green;
+}
+
+.highlightPlayer2Win {
     color: red;
 }
 
-#radioButtons {
-    font-size: 32pt;
-}
-
-#radioButtons input {
-    margin-top: 24px;
+.highlightDraw {
+    color: #FFBF00;
 }

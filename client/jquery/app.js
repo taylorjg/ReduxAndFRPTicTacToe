@@ -1,247 +1,235 @@
 import $ from 'jquery';
 
-(function() {
-    
-    "use strict";
+const PLAYER1_TURN_MESSAGE = 'Your turn. Click an empty square to make your move.';
+const PLAYER2_TURN_MESSAGE = 'The computer is thinking...';
+const ARTIFICIAL_THINKING_TIME = 100;
+const CROSS = 'X';
+const NOUGHT = 'O';
+const EMPTY = '-';
 
-    var CHOOSE_PIECE_MESSAGE = "Choose noughts or crosses then click the Start button.";
-    var START_MESSAGE = "Click the Start button to start a new game.";     
-    var PLAYER1_TURN_MESSAGE = "Your turn. Click an empty square to make your move.";
-    var PLAYER2_TURN_MESSAGE = "The computer is thinking...";
-    var PLAYER1_WON_MESSAGE = "You won!";
-    var PLAYER2_WON_MESSAGE = "The computer won!";
-    var DRAW_MESSAGE = "It's a draw!";
-    var UNKNOWN_WINNER_MESSAGE = "I r confuse about who won!?";
-    var ARTIFICIAL_THINKING_TIME = 750;
-    var CROSS = "X";
-    var NOUGHT = "O";
-    var EMPTY = "-";
-    var player1Piece;
-    var player2Piece;
-    var started = false;
-    var gameOver = false;
-    var computerMoveInProgress = false;
-    
-    $(document).ready(function() {
-        $("#startBtn").click(onStart);
-        $("#resetBtn").click(onReset);
-        $("#board td").click(onCellClick);
-        $("#crossesRadio").click(function() {
-            choosePiece(CROSS);
-        });
-        $("#noughtsRadio").click(function() {
-            choosePiece(NOUGHT);
-        });
-        $("#crossesRadio").trigger("click");
-        initialise();
-    });
-    
-    function onStart() {
-        start();
+const player1Piece = CROSS;
+const player2Piece = NOUGHT;
+
+const HUMAN_PLAYER = 1;
+const COMPUTER_PLAYER = 2;
+
+const STATE_NO_GAME_IN_PROGRESS = 0;
+const STATE_HUMAN_MOVE = 1;
+const STATE_COMPUTER_MOVE = 2;
+
+const HIGHLIGHT_PLAYER1_WIN = 'highlightPlayer1Win';
+const HIGHLIGHT_PLAYER2_WIN = 'highlightPlayer2Win';
+const HIGHLIGHT_DRAW = 'highlightDraw';
+const ALL_HIGHLIGHTS = `${HIGHLIGHT_PLAYER1_WIN} ${HIGHLIGHT_PLAYER2_WIN} ${HIGHLIGHT_DRAW}`;
+
+let state = STATE_NO_GAME_IN_PROGRESS;
+let $cellElements;
+let $instructionPanel;
+let $instructionMessage;
+let $spinner;
+let $errorPanel;
+let $errorMessage;
+let $startButton;
+
+$(document).ready(() => {
+    $cellElements = $('#board td').click(makeHumanMove);
+    $instructionPanel = $('#instructionPanel');
+    $instructionMessage = $('#instructionMessage');
+    $spinner = $('#spinner');
+    $errorPanel = $('#errorPanel');
+    $errorMessage = $('#errorMessage');
+    $startButton = $('#startButton').click(start);
+    reset();
+});
+
+function reset() {
+    clearBoard();
+    clearInstructionMessage();
+    clearErrorMessage();
+}
+
+function startHelper() {
+
+    function whoGoesFirst() {
+        return (Math.random() < 0.5) ? HUMAN_PLAYER : COMPUTER_PLAYER;
     }
 
-    function onReset() {
-        reinitialise();
-    }
+    reset();
+    hideStartButton();
 
-    function onCellClick(e) {
-        if (!started || gameOver || computerMoveInProgress) {
-            return;
-        }
-        var id = e.target.id;
-        var ch = getCell(id);
-        if (ch !== EMPTY) {
-            return;
-        }
-        setCell(id, player1Piece);
+    const playerToGoFirst = whoGoesFirst();
+
+    if (playerToGoFirst === HUMAN_PLAYER) {
+        setStateHumanMove();
+    }
+    else {
         makeComputerMove();
     }
-    
-    function choosePiece(piece) {
-        player1Piece = piece;
-        player2Piece = (piece === CROSS) ? NOUGHT : CROSS;
-    }
-    
-    function whoGoesFirst() {
-        return (Math.random() < 0.5) ? 1 : 2;
-    }
-    
-    function makeComputerMove() {
-        
-        showSpinner();
-        computerMoveInProgress = true;
-        setMessage(PLAYER2_TURN_MESSAGE);
-        
-        setTimeout(function() {
-            
-            var requestData = {
-                board: saveBoardToString(),
-                player1Piece: player1Piece,
-                player2Piece: player2Piece
-            };
-        
-            $.post({
-                url: "/api/computerMove",
-                data: JSON.stringify(requestData),
-                contentType: "application/json"
-            })
-                .done(handleComputerMove)
-                .fail(function() {
-                    console.log(arguments);
-                })
-                .always(function() {
-                    hideSpinner();
-                    computerMoveInProgress = false;
-                });        
-        }, ARTIFICIAL_THINKING_TIME);
-    }
-    
-    function handleComputerMove(state) {
-        updateBoardFromString(state.board);
-        if (state.gameOver) {
-            switch (state.winningPlayer) {
-                case 1:
-                    setMessage(PLAYER1_WON_MESSAGE);
-                    highlightWinningLine(state.winningLine);
-                    break;
-                case 2:
-                    setMessage(PLAYER2_WON_MESSAGE);
-                    highlightWinningLine(state.winningLine);
-                    break;
-                case 3:
-                    setMessage(DRAW_MESSAGE);
-                    break;
-                default:
-                    setMessage(UNKNOWN_WINNER_MESSAGE);
-                    break;    
-            }
-            gameOver = true;
-            showStartButton();
-        }
-        else {
-            setMessage(PLAYER1_TURN_MESSAGE);
-        }
-    }
-    
-    function saveBoardToString() {
-        return "" +
-            getCell("cell00") +
-            getCell("cell01") +
-            getCell("cell02") +
-            getCell("cell10") +
-            getCell("cell11") +
-            getCell("cell12") +
-            getCell("cell20") +
-            getCell("cell21") +
-            getCell("cell22");
-    }
 
-    function updateBoardFromString(s) {
-        setCell("cell00", s[0]);
-        setCell("cell01", s[1]);
-        setCell("cell02", s[2]);
-        setCell("cell10", s[3]);
-        setCell("cell11", s[4]);
-        setCell("cell12", s[5]);
-        setCell("cell20", s[6]);
-        setCell("cell21", s[7]);
-        setCell("cell22", s[8]);
+    return playerToGoFirst;
+}
+
+function start() {
+    startHelper();
+}
+
+function setStateHumanMove() {
+    state = STATE_HUMAN_MOVE;
+    setInstructionMessage(PLAYER1_TURN_MESSAGE);
+}
+
+function setStateComputerMove() {
+    state = STATE_COMPUTER_MOVE;
+    setInstructionMessageWithSpinner(PLAYER2_TURN_MESSAGE);
+    clearErrorMessage();
+}
+
+function setStateGameOver() {
+    state = STATE_NO_GAME_IN_PROGRESS;
+    clearInstructionMessage();
+    showStartButton();
+}
+
+function makeHumanMove() {
+    if (state === STATE_COMPUTER_MOVE) {
+        return;
     }
-    
-    function initialise() {
-        reset();
-        showChoosePieceRadioButtons();
-        showStartButton();
-    }
-    
-    function reinitialise() {
-        reset();
-        showStartButton();
-        setMessage(START_MESSAGE);
-    }
-    
-    function reset() {
-        var emptyBoardString = [
-            EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, EMPTY,
-            EMPTY, EMPTY, EMPTY
-        ].join("");
-        updateBoardFromString(emptyBoardString);
-        $("#board td").removeClass("highlight");
-        started = false;
-        gameOver = false;
-        computerMoveInProgress = false;
-        hideSpinner();
-    }
-    
-    function start() {
-        reset();
-        started = true;
-        hideChoosePieceRadioButtons();
-        showResetButton();
-        if (whoGoesFirst() === 1) {
-            setMessage(PLAYER1_TURN_MESSAGE);
-        }
-        else {
-            makeComputerMove();
+    if (state === STATE_NO_GAME_IN_PROGRESS) {
+        if (startHelper() === COMPUTER_PLAYER) {
+            return;
         }
     }
-    
-    function setCell(id, piece) {
-        $("#" + id).html(piece === CROSS || piece === NOUGHT ? piece : "");
+    const $cellElement = $(this);
+    if (getCell($cellElement) !== EMPTY) {
+        return;
     }
-    
-    function getCell(id) {
-        var piece = $("#" + id).html();
-        return piece === CROSS || piece === NOUGHT ? piece : EMPTY;
-    }
-    
-    function highlightWinningLine(cellIndices) {
-        var cellIndicesToIds = {
-            0: "cell00",
-            1: "cell01",
-            2: "cell02",
-            3: "cell10",
-            4: "cell11",
-            5: "cell12",
-            6: "cell20",
-            7: "cell21",
-            8: "cell22"
+    setCell($cellElement, player1Piece);
+    makeComputerMove();
+}
+
+function makeComputerMove() {
+
+    setStateComputerMove();
+
+    setTimeout(() => {
+
+        const requestData = {
+            board: saveBoardToString(),
+            player1Piece: player1Piece,
+            player2Piece: player2Piece
         };
-        for (var i = 0; i < cellIndices.length; i++) {
-            var id = cellIndicesToIds[cellIndices[i]];
-            $("#" + id).addClass("highlight");
+
+        $.post({
+            url: '/api/computerMove',
+            data: JSON.stringify(requestData),
+            contentType: 'application/json'
+        })
+        .always(() => {
+            state = STATE_HUMAN_MOVE;
+            setInstructionMessage(PLAYER1_TURN_MESSAGE);
+        })
+        .then(handleComputerMoveResponse)
+        .catch(handleComputerMoveError);
+    }, ARTIFICIAL_THINKING_TIME);
+}
+
+function handleComputerMoveResponse(state) {
+    updateBoardFromString(state.board);
+    if (state.outcome) {
+        switch (state.outcome) {
+            case HUMAN_PLAYER:
+                highlightCells(state.winningLine, HIGHLIGHT_PLAYER1_WIN);
+                break;
+            case COMPUTER_PLAYER:
+                highlightCells(state.winningLine, HIGHLIGHT_PLAYER2_WIN);
+                break;
+            default:
+                highlightCells([0,1,2,3,4,5,6,7,8], HIGHLIGHT_DRAW);
+                break;
         }
+        setStateGameOver();
     }
-    
-    function setMessage(message) {
-        $("#messageArea").html(message);
+}
+
+function handleComputerMoveError(xhr) {
+    const statusText = xhr.statusText;
+    const statusCode = xhr.status ? `(${xhr.status})` : '';
+    if (statusText && statusText !== 'error') {
+        setErrorMessage(`Error during computer move: ${statusText} ${statusCode}`);
     }
-    
-    function showStartButton() {
-        $("#startBtn").show();
-        $("#resetBtn").hide();
+    else {
+        setErrorMessage(`Error during computer move`);
     }
-    
-    function showResetButton() {
-        $("#resetBtn").show();
-        $("#startBtn").hide();
-    }
-    
-    function showSpinner() {
-        $("#spinner").show();
-    }
-    
-    function hideSpinner() {
-        $("#spinner").hide();
-    }
-    
-    function showChoosePieceRadioButtons() {
-        $("#radioButtons").show();
-        setMessage(CHOOSE_PIECE_MESSAGE);
-    }
-    
-    function hideChoosePieceRadioButtons() {
-        $("#radioButtons").hide();
-    }
-}());
+}
+
+function getCell($cellElement) {
+    var piece = $cellElement.html();
+    return piece === CROSS || piece === NOUGHT ? piece : EMPTY;
+}
+
+function setCell($cellElement, piece) {
+    $cellElement.html(piece === CROSS || piece === NOUGHT ? piece : '&nbsp;');
+}
+
+function highlightCells(cellIndices, cssClass) {
+    $cellElements
+        .filter(cellIndex => cellIndices.includes(cellIndex))
+        .addClass(cssClass);
+}
+
+function saveBoardToString() {
+    return $cellElements.map((cellIndex, cellElement) => getCell($(cellElement))).get().join('');
+}
+
+function clearBoard() {
+    updateBoardFromString(EMPTY.repeat(9));
+    $cellElements.removeClass(ALL_HIGHLIGHTS);
+}
+
+function updateBoardFromString(board) {
+    $cellElements.each((cellIndex, cellElement) => {
+        setCell($(cellElement), board.charAt(cellIndex));
+    });
+}
+
+function setInstructionMessage(message) {
+    $instructionMessage.html(message);
+    $instructionPanel.show();
+    hideSpinner();
+}
+
+function setInstructionMessageWithSpinner(message) {
+    $instructionMessage.html(message);
+    $instructionPanel.show();
+    showSpinner();
+}
+
+function clearInstructionMessage() {
+    $instructionPanel.hide();
+}
+
+function setErrorMessage(errorMessage) {
+    $errorMessage.html(errorMessage);
+    $errorPanel.removeClass('hidden');
+    $errorPanel.show();
+}
+
+function clearErrorMessage() {
+    $errorPanel.hide();
+}
+
+function showStartButton() {
+    $startButton.show();
+}
+
+function hideStartButton() {
+    $startButton.hide();
+}
+
+function showSpinner() {
+    $spinner.show();
+}
+
+function hideSpinner() {
+    $spinner.hide();
+}

@@ -23,8 +23,7 @@ describe("computerMove", function() {
                 "-O-",
             player1Piece: "X",
             player2Piece: "O",
-            gameOver: true,
-            winningPlayer: 2,
+            outcome: 2,
             winningLine: [1, 4, 7]
         };
         
@@ -50,8 +49,7 @@ describe("computerMove", function() {
                 "OX-" +
                 "--O",
             player1Piece: "X",
-            player2Piece: "O",
-            gameOver: false
+            player2Piece: "O"
         };
         
         assert.deepEqual(actual, expected);
@@ -77,8 +75,7 @@ describe("computerMove", function() {
                 "X-O",
             player1Piece: "X",
             player2Piece: "O",
-            gameOver: true,
-            winningPlayer: 1,
+            outcome: 1,
             winningLine: [2, 4, 6]
         };
         
@@ -105,8 +102,7 @@ describe("computerMove", function() {
                 "XOX",
             player1Piece: "X",
             player2Piece: "O",
-            gameOver: true,
-            winningPlayer: 3
+            outcome: 3
         };
         
         assert.deepEqual(actual, expected);
@@ -132,8 +128,7 @@ describe("computerMove", function() {
                 "XOX",
             player1Piece: "X",
             player2Piece: "O",
-            gameOver: true,
-            winningPlayer: 3
+            outcome: 3
         };
         
         assert.deepEqual(actual, expected);
@@ -159,8 +154,7 @@ describe("computerMove", function() {
                 "OXO",
             player1Piece: "X",
             player2Piece: "O",
-            gameOver: true,
-            winningPlayer: 3
+            outcome: 3
         };
         
         assert.deepEqual(actual, expected);
