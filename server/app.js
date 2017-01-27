@@ -18,10 +18,10 @@ app.listen(port, () => console.log(`Listening on port ${port}`));
 function handleComputerMove(req, res) {
     
     const state = req.body;
-    console.log('state', state);
+    console.log(`request JSON: ${JSON.stringify(state)}`);
     
     const responseData = engine.computerMove(state);
-    console.log('responseData', responseData);
+    console.log(`response JSON: ${JSON.stringify(responseData)}`);
     
     return res.json(responseData);
 }
