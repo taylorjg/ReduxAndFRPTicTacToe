@@ -29,7 +29,6 @@ let $instructionPanel;
 let $instructionMessage;
 let $spinner;
 let $errorPanel;
-let $errorMessage;
 let $startButton;
 
 $(document).ready(() => {
@@ -38,7 +37,6 @@ $(document).ready(() => {
     $instructionMessage = $('#instructionMessage');
     $spinner = $('#spinner');
     $errorPanel = $('#errorPanel');
-    $errorMessage = $('#errorMessage');
     $startButton = $('#startButton').click(start);
     $('#retryButton').click(makeComputerMove);
     reset();
@@ -47,7 +45,7 @@ $(document).ready(() => {
 function reset() {
     clearBoard();
     clearInstructionMessage();
-    clearErrorMessage();
+    hideErrorPanel();
 }
 
 function startHelper() {
@@ -85,7 +83,7 @@ function setStateComputerMove() {
     setInstructionMessageWithSpinner(PLAYER2_TURN_MESSAGE);
 }
 
-function setStateGameOver() {
+function setStateNoGameInProgress() {
     state = STATE_NO_GAME_IN_PROGRESS;
     clearInstructionMessage();
     showStartButton();
@@ -93,6 +91,7 @@ function setStateGameOver() {
 
 function setStateWebServiceError() {
     state = STATE_WEB_SERVICE_ERROR;
+    showErrorPanel();
 }
 
 function makeHumanMove() {
@@ -117,49 +116,47 @@ function makeComputerMove() {
             player2Piece: player2Piece
         };
 
-        $.post({
-            url: '/api/computerMove',
-            data: JSON.stringify(requestData),
-            contentType: 'application/json'
-        })
-        .always(() => {
-            state = STATE_HUMAN_MOVE;
-            setInstructionMessage(PLAYER1_TURN_MESSAGE);
-        })
-        .then(handleComputerMoveResponse)
-        .catch(handleComputerMoveError);
+        const request = {
+            method: 'POST',
+            headers: new Headers({
+                'Content-Type': 'application/json'
+            }),
+            body: JSON.stringify(requestData)
+        };
+
+        fetch('/api/computerMove', request)
+            .then(response => {
+                setStateHumanMove();
+                return response;
+            })
+            .then(handleComputerMoveResponse)
+            .catch(handleComputerMoveError);
     }, ARTIFICIAL_THINKING_TIME);
 }
 
-function handleComputerMoveResponse(state) {
-    clearErrorMessage();
-    updateBoardFromString(state.board);
-    if (state.outcome) {
-        switch (state.outcome) {
-            case HUMAN_PLAYER:
-                highlightCells(state.winningLine, HIGHLIGHT_WIN);
-                break;
-            case COMPUTER_PLAYER:
-                highlightCells(state.winningLine, HIGHLIGHT_LOSE);
-                break;
-            default:
-                highlightCells([0,1,2,3,4,5,6,7,8], HIGHLIGHT_DRAW);
-                break;
+function handleComputerMoveResponse(response) {
+    response.json().then(state => {
+        hideErrorPanel();
+        updateBoardFromString(state.board);
+        if (state.outcome) {
+            switch (state.outcome) {
+                case HUMAN_PLAYER:
+                    highlightCells(state.winningLine, HIGHLIGHT_WIN);
+                    break;
+                case COMPUTER_PLAYER:
+                    highlightCells(state.winningLine, HIGHLIGHT_LOSE);
+                    break;
+                default:
+                    highlightCells([0,1,2,3,4,5,6,7,8], HIGHLIGHT_DRAW);
+                    break;
+            }
+            setStateNoGameInProgress();
         }
-        setStateGameOver();
-    }
+    });
 }
 
-function handleComputerMoveError(xhr) {
+function handleComputerMoveError() {
     setStateWebServiceError();
-    const statusText = xhr.statusText;
-    const statusCode = xhr.status ? `(${xhr.status})` : '';
-    if (statusText && statusText !== 'error') {
-        setErrorMessage(`Error during computer move: ${statusText} ${statusCode}`);
-    }
-    else {
-        setErrorMessage(`Error during computer move`);
-    }
 }
 
 function getCell($cellElement) {
@@ -208,13 +205,12 @@ function clearInstructionMessage() {
     $instructionPanel.hide();
 }
 
-function setErrorMessage(errorMessage) {
-    $errorMessage.html(errorMessage);
+function showErrorPanel() {
     $errorPanel.removeClass('hidden');
     $errorPanel.show();
 }
 
-function clearErrorMessage() {
+function hideErrorPanel() {
     $errorPanel.hide();
 }
 
