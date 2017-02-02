@@ -9,6 +9,13 @@
 #board td {
     width: 100px;
     height: 100px;
+}
+
+#board td div {
+    width: 80px;
+    height: 80px;
+    margin: 10px;
+    line-height: 80px;
     font-size: 48pt;
     font-family: Courier New, Courier, monospace;
     vertical-align: middle;

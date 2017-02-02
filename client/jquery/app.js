@@ -32,7 +32,9 @@ let $errorPanel;
 let $startButton;
 
 $(document).ready(() => {
-    $cellElements = $('#board td').click(makeHumanMove);
+    $cellElements = $('#board td div');
+    $cellElements.keydown(handleKeydown);
+    $cellElements.click(makeHumanMove);
     $instructionPanel = $('#instructionPanel');
     $instructionMessage = $('#instructionMessage');
     $spinner = $('#spinner');
@@ -46,6 +48,7 @@ function reset() {
     clearBoard();
     clearInstructionMessage();
     hideErrorPanel();
+    $startButton.focus();
 }
 
 function startHelper() {
@@ -92,6 +95,58 @@ function setStateNoGameInProgress() {
 function setStateWebServiceError() {
     state = STATE_WEB_SERVICE_ERROR;
     showErrorPanel();
+}
+
+function handleKeydown(e) {
+
+    const SPACE_KEY = 32;
+    const LEFT_ARROW_KEY = 37;
+    const UP_ARROW_KEY = 38;
+    const RIGHT_ARROW_KEY = 39;
+    const DOWN_ARROW_KEY = 40;
+
+    // Stop at the edges:
+    // const up = index => index > 2 ? index - 3 : -1;
+    // const down = index => index < 6 ? index + 3 : -1;
+    // const left = index => index % 3 !== 0 ? index - 1 : -1;
+    // const right = index => index % 3 !== 2 ? index + 1 : -1;
+
+    // Wrap around the current row/col:
+    const up = index => index > 2 ? index - 3 : index + 6;
+    const down = index => index < 6 ? index + 3 : index - 6;
+    const left = index => index % 3 !== 0 ? index - 1 : index + 2;
+    const right = index => index % 3 !== 2 ? index + 1 : index - 2;
+
+    // Always increment/decrement the index but wrap from 0 to 8 and vice versa:
+    // const up = index => index > 2 ? index - 3 : 8 - ((3 - index) % 3);
+    // const down = index => index < 6 ? index + 3 : (index - 5) % 3;
+    // const left = index => index > 0 ? index - 1 : 8;
+    // const right = index => index < 8 ? index + 1 : 0;
+
+    const index = $cellElements.index(this);
+
+    const navigate = fn => {
+        const newIndex = fn(index);
+        if (newIndex >= 0) $cellElements.eq(newIndex).focus();
+    };
+    
+    switch (e.keyCode) {
+        case SPACE_KEY:
+            makeHumanMove.call(this);
+            break;
+        case UP_ARROW_KEY:
+            navigate(up);
+            break;
+        case DOWN_ARROW_KEY:
+            navigate(down);
+            break;
+        case LEFT_ARROW_KEY:
+            navigate(left);
+            break;
+        case RIGHT_ARROW_KEY:
+            navigate(right);
+            break;
+    }
 }
 
 function makeHumanMove() {
@@ -147,7 +202,7 @@ function handleComputerMoveResponse(response) {
                     highlightCells(state.winningLine, HIGHLIGHT_LOSE);
                     break;
                 default:
-                    highlightCells([0,1,2,3,4,5,6,7,8], HIGHLIGHT_DRAW);
+                    highlightCells([0, 1, 2, 3, 4, 5, 6, 7, 8], HIGHLIGHT_DRAW);
                     break;
             }
             setStateNoGameInProgress();
@@ -216,10 +271,12 @@ function hideErrorPanel() {
 
 function showStartButton() {
     $startButton.show();
+    $startButton.focus();
 }
 
 function hideStartButton() {
     $startButton.hide();
+    $cellElements.eq(4).focus();
 }
 
 function showSpinner() {
