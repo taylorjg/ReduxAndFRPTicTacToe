@@ -1,14 +1,17 @@
 import $ from 'jquery';
 
+const START_GAME_MESSAGE = 'Use the Start button to begin a new game.';
 const PLAYER1_TURN_MESSAGE = 'Your turn. Click an empty square to make your move.';
 const PLAYER2_TURN_MESSAGE = 'The computer is thinking...';
-const ARTIFICIAL_THINKING_TIME = 100;
+
+const ARTIFICIAL_THINKING_TIME = 400;
+
 const CROSS = 'X';
 const NOUGHT = 'O';
 const EMPTY = '-';
 
-const player1Piece = CROSS;
-const player2Piece = NOUGHT;
+const HUMAN_PLAYER_PIECE = CROSS;
+const COMPUTER_PLAYER_PIECE = NOUGHT;
 
 const HUMAN_PLAYER = 1;
 const COMPUTER_PLAYER = 2;
@@ -19,82 +22,67 @@ const STATE_COMPUTER_MOVE = 2;
 const STATE_WEB_SERVICE_ERROR = 3;
 
 const HIGHLIGHT_WIN = 'win';
-const HIGHLIGHT_LOSE = 'lose';
+const HIGHLIGHT_LOSS = 'lose';
 const HIGHLIGHT_DRAW = 'draw';
-const ALL_HIGHLIGHTS = `${HIGHLIGHT_WIN} ${HIGHLIGHT_LOSE} ${HIGHLIGHT_DRAW}`;
+const ALL_HIGHLIGHTS = `${HIGHLIGHT_WIN} ${HIGHLIGHT_LOSS} ${HIGHLIGHT_DRAW}`;
 
-let state = STATE_NO_GAME_IN_PROGRESS;
+let state;
 let $cellElements;
-let $instructionPanel;
-let $instructionMessage;
+let $infoPanel;
+let $infoMessage;
 let $spinner;
 let $errorPanel;
 let $startButton;
+let $retryButton;
 
 $(document).ready(() => {
     $cellElements = $('#board td div');
     $cellElements.keydown(handleKeydown);
     $cellElements.click(makeHumanMove);
-    $instructionPanel = $('#instructionPanel');
-    $instructionMessage = $('#instructionMessage');
-    $spinner = $('#spinner');
+    $infoPanel = $('#infoPanel');
+    $infoMessage = $('#infoMessage');
+    $spinner = $('.spinner');
     $errorPanel = $('#errorPanel');
     $startButton = $('#startButton').click(start);
-    $('#retryButton').click(makeComputerMove);
+    $retryButton = $('#retryButton').click(makeComputerMove);
     reset();
+    setStateNoGameInProgress();
 });
 
 function reset() {
     clearBoard();
-    clearInstructionMessage();
     hideErrorPanel();
-    $startButton.focus();
-}
-
-function startHelper() {
-
-    function whoGoesFirst() {
-        return (Math.random() < 0.5) ? HUMAN_PLAYER : COMPUTER_PLAYER;
-    }
-
-    reset();
     hideStartButton();
-
-    const playerToGoFirst = whoGoesFirst();
-
-    if (playerToGoFirst === HUMAN_PLAYER) {
-        setStateHumanMove();
-    }
-    else {
-        makeComputerMove();
-    }
-
-    return playerToGoFirst;
 }
 
 function start() {
-    startHelper();
-}
-
-function setStateHumanMove() {
-    state = STATE_HUMAN_MOVE;
-    setInstructionMessage(PLAYER1_TURN_MESSAGE);
-}
-
-function setStateComputerMove() {
-    state = STATE_COMPUTER_MOVE;
-    setInstructionMessageWithSpinner(PLAYER2_TURN_MESSAGE);
+    reset();
+    const playerToGoFirst = (Math.random() < 0.5) ? HUMAN_PLAYER : COMPUTER_PLAYER;
+    playerToGoFirst === HUMAN_PLAYER ? setStateHumanMove() : makeComputerMove();
 }
 
 function setStateNoGameInProgress() {
     state = STATE_NO_GAME_IN_PROGRESS;
-    clearInstructionMessage();
+    setInfoMessage(START_GAME_MESSAGE);
     showStartButton();
+}
+
+function setStateHumanMove() {
+    state = STATE_HUMAN_MOVE;
+    setInfoMessage(PLAYER1_TURN_MESSAGE);
+}
+
+function setStateComputerMove() {
+    if (state !== STATE_WEB_SERVICE_ERROR) {
+        setInfoMessage(PLAYER2_TURN_MESSAGE);
+    }
+    state = STATE_COMPUTER_MOVE;
 }
 
 function setStateWebServiceError() {
     state = STATE_WEB_SERVICE_ERROR;
     showErrorPanel();
+    hideInfoPanel();
 }
 
 function handleKeydown(e) {
@@ -153,7 +141,7 @@ function makeHumanMove() {
     if (state === STATE_HUMAN_MOVE) {
         const $cellElement = $(this);
         if (getCell($cellElement) === EMPTY) {
-            setCell($cellElement, player1Piece);
+            setCell($cellElement, HUMAN_PLAYER_PIECE);
             makeComputerMove();
         }
     }
@@ -161,14 +149,15 @@ function makeHumanMove() {
 
 function makeComputerMove() {
 
+    showSpinner();
     setStateComputerMove();
 
     setTimeout(() => {
 
         const requestData = {
             board: saveBoardToString(),
-            player1Piece: player1Piece,
-            player2Piece: player2Piece
+            player1Piece: HUMAN_PLAYER_PIECE,
+            player2Piece: COMPUTER_PLAYER_PIECE
         };
 
         const request = {
@@ -181,6 +170,7 @@ function makeComputerMove() {
 
         fetch('/api/computerMove', request)
             .then(response => {
+                hideSpinner();
                 setStateHumanMove();
                 return response;
             })
@@ -199,10 +189,10 @@ function handleComputerMoveResponse(response) {
                     highlightCells(state.winningLine, HIGHLIGHT_WIN);
                     break;
                 case COMPUTER_PLAYER:
-                    highlightCells(state.winningLine, HIGHLIGHT_LOSE);
+                    highlightCells(state.winningLine, HIGHLIGHT_LOSS);
                     break;
                 default:
-                    highlightCells([0, 1, 2, 3, 4, 5, 6, 7, 8], HIGHLIGHT_DRAW);
+                    highlightCells(Array.from(Array(9).keys()), HIGHLIGHT_DRAW);
                     break;
             }
             setStateNoGameInProgress();
@@ -244,25 +234,24 @@ function updateBoardFromString(board) {
     });
 }
 
-function setInstructionMessage(message) {
-    $instructionMessage.html(message);
-    $instructionPanel.show();
-    hideSpinner();
+function setInfoMessage(message) {
+    $infoMessage.html(message);
+    showInfoPanel(false);
 }
 
-function setInstructionMessageWithSpinner(message) {
-    $instructionMessage.html(message);
-    $instructionPanel.show();
-    showSpinner();
+function showInfoPanel() {
+    $infoPanel.show();
 }
 
-function clearInstructionMessage() {
-    $instructionPanel.hide();
+function hideInfoPanel() {
+    $infoPanel.hide();
 }
 
 function showErrorPanel() {
     $errorPanel.removeClass('hidden');
     $errorPanel.show();
+    hideSpinner();
+    $retryButton.focus();
 }
 
 function hideErrorPanel() {
@@ -280,6 +269,7 @@ function hideStartButton() {
 }
 
 function showSpinner() {
+    $spinner.removeClass('hidden');
     $spinner.show();
 }
 

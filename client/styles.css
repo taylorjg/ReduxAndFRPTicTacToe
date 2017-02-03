@@ -46,3 +46,7 @@
 .draw {
     color: #FFBF00;
 }
+
+.alert > div {
+    margin-top: 5px;
+}
