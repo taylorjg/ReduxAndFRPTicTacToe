@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import * as d3 from 'd3';
 
 const START_GAME_MESSAGE = 'Use the Start button to begin a new game.';
 const PLAYER1_TURN_MESSAGE = 'Your turn. Click an empty square to make your move.';
@@ -47,6 +48,8 @@ $(document).ready(() => {
     $retryButton = $('#retryButton').click(makeComputerMove);
     reset();
     setStateNoGameInProgress();
+    updateVisualisation1();
+    updateVisualisation2();
 });
 
 function reset() {
@@ -196,6 +199,7 @@ function handleComputerMoveResponse(response) {
                     break;
             }
             setStateNoGameInProgress();
+            addResultHistoryEntry(state.outcome);
         }
     });
 }
@@ -276,3 +280,61 @@ function showSpinner() {
 function hideSpinner() {
     $spinner.hide();
 }
+
+// Each entry will be: [L, D, W]    
+const resultHistory = [];
+
+const BAR_COLOURS = [
+    'red',     // L
+    '#FFBF00', // D
+    'green'    // W
+];
+
+const lastResultHistoryEntry = () =>
+    resultHistory[resultHistory.length - 1] || [0, 0, 0];
+
+const updateVisualisation1 = () => {
+    const resultSummary = lastResultHistoryEntry();
+    const vis1 = d3.select('#vis1');
+    const width = vis1.node().scrollWidth;
+    const height = vis1.node().scrollHeight;
+    const maxValue = Math.max(d3.max(resultSummary), 10);
+    const updateBars = selection => {
+        selection
+            .attr('x', 0)
+            .attr('y', (d, i) => height / 3 * i)
+            .attr('width', d => maxValue === 0 ? 0 : width / maxValue * d)
+            .attr('height', height / 3)
+            .style('fill', (d, i) => BAR_COLOURS[i]);
+    };
+    const bars = vis1.selectAll('rect').data(resultSummary);
+    updateBars(bars);
+    updateBars(bars.enter().append('rect'));
+};
+
+const updateVisualisation2 = () => {
+};
+
+const updateVisualisations = () => {
+    updateVisualisation1();
+    updateVisualisation2();
+};
+
+const addResultHistoryEntry = outcome => {
+    const newEntry = lastResultHistoryEntry().slice();
+    let index;
+    switch (outcome) {
+        case HUMAN_PLAYER:
+            index = 2;
+            break;
+        case COMPUTER_PLAYER:
+            index = 0;
+            break;
+        default:
+            index = 1;
+            break;
+    }
+    newEntry[index] = newEntry[index] + 1;
+    resultHistory.push(newEntry);
+    updateVisualisations();
+};
