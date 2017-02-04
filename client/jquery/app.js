@@ -282,19 +282,7 @@ function hideSpinner() {
 }
 
 // Each entry will be: [L, D, W]    
-// const resultHistory = [];
-const resultHistory = [
-    [0, 0, 0],
-    [0, 1, 0],
-    [0, 2, 0],
-    [1, 2, 0],
-    [1, 3, 0],
-    [1, 3, 1],
-    [2, 3, 1],
-    [2, 4, 1],
-    [2, 5, 1],
-    [3, 5, 1]
-];
+const resultHistory = [];
 
 const BAR_COLOURS = [
     'red',     // L
@@ -313,27 +301,27 @@ const updateVisualisation1 = () => {
     const maxValue = Math.max(d3.max(resultSummary), 10);
     const yScale = d3.scaleLinear().domain([0, 3]).range([0, height]);
     const widthScale = d3.scaleLinear().domain([0, maxValue]).range([0, width]);
-    const updateBars = selection => {
+    const update = selection =>
         selection
             .attr('x', 0)
             .attr('y', (d, i) => yScale(i))
             .attr('width', d => widthScale(d))
             .attr('height', height / 3)
             .style('fill', (d, i) => BAR_COLOURS[i]);
-    };
     const bars = vis1.selectAll('rect').data(resultSummary);
-    updateBars(bars);
-    updateBars(bars.enter().append('rect'));
+    update(bars);
+    update(bars.enter().append('rect'));
 };
 
 const updateVisualisation2 = () => {
     const vis2 = d3.select('#vis2');
+    vis2.selectAll('path').remove();
     const width = vis2.node().scrollWidth;
     const height = vis2.node().scrollHeight;
     const xScale = d3.scaleLinear().domain([0, resultHistory.length - 1]).range([0, width]);
-    const yScale = d3.scaleLinear().domain([0, 11]).range([height, 0]);
+    const yScale = d3.scaleLinear().domain([0, resultHistory.length]).range([height, 0]);
     const cols = [0, 1, 2];
-    const simpleTracking = (d, index) => d.reduce((acc, n, i) => acc + (i <= index ? n : 0), 0);
+    const simpleTracking = (d, index) => d.reduce((acc, n, i) => acc + (i >= index ? n : 0), 0);
     cols.forEach(col => {
         const makeArea = d3.area()
             .x((d, i) => xScale(i))
