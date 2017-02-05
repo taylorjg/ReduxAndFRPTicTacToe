@@ -282,7 +282,9 @@ function hideSpinner() {
 }
 
 // Each entry will be: [L, D, W]    
-const resultHistory = [];
+const resultHistory = [
+    [0, 0, 0]
+];
 
 const BAR_COLOURS = [
     'red',     // L
@@ -319,7 +321,7 @@ const updateVisualisation2 = () => {
     const width = vis2.node().scrollWidth;
     const height = vis2.node().scrollHeight;
     const xScale = d3.scaleLinear().domain([0, resultHistory.length - 1]).range([0, width]);
-    const yScale = d3.scaleLinear().domain([0, resultHistory.length]).range([height, 0]);
+    const yScale = d3.scaleLinear().domain([0, resultHistory.length - 1]).range([height, 0]);
     const cols = [0, 1, 2];
     const simpleTracking = (d, index) => d.reduce((acc, n, i) => acc + (i >= index ? n : 0), 0);
     cols.forEach(col => {
