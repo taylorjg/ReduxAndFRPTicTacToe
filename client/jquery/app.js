@@ -48,8 +48,7 @@ $(document).ready(() => {
     $retryButton = $('#retryButton').click(makeComputerMove);
     reset();
     setStateNoGameInProgress();
-    updateVisualisation1();
-    updateVisualisation2();
+    updateVisualisations();
 });
 
 function reset() {
@@ -281,10 +280,11 @@ function hideSpinner() {
     $spinner.hide();
 }
 
-// Each entry will be: [L, D, W]    
 const resultHistory = [
-    [0, 0, 0]
+    [0, 0, 0] // [L, D, W]    
 ];
+
+const lastResultHistoryEntry = () => resultHistory[resultHistory.length - 1];
 
 const BAR_COLOURS = [
     'red',     // L
@@ -292,8 +292,29 @@ const BAR_COLOURS = [
     'green'    // W
 ];
 
-const lastResultHistoryEntry = () =>
-    resultHistory[resultHistory.length - 1] || [0, 0, 0];
+const addResultHistoryEntry = outcome => {
+    const newEntry = lastResultHistoryEntry().slice();
+    let index;
+    switch (outcome) {
+        case HUMAN_PLAYER:
+            index = 2;
+            break;
+        case COMPUTER_PLAYER:
+            index = 0;
+            break;
+        default:
+            index = 1;
+            break;
+    }
+    newEntry[index] = newEntry[index] + 1;
+    resultHistory.push(newEntry);
+    updateVisualisations();
+};
+
+const updateVisualisations = () => {
+    updateVisualisation1();
+    updateVisualisation2();
+};
 
 const updateVisualisation1 = () => {
     const resultSummary = lastResultHistoryEntry();
@@ -335,28 +356,4 @@ const updateVisualisation2 = () => {
             .attr('d', makeArea(resultHistory))
             .attr('fill', BAR_COLOURS[col]);
     });
-};
-
-const updateVisualisations = () => {
-    updateVisualisation1();
-    updateVisualisation2();
-};
-
-const addResultHistoryEntry = outcome => {
-    const newEntry = lastResultHistoryEntry().slice();
-    let index;
-    switch (outcome) {
-        case HUMAN_PLAYER:
-            index = 2;
-            break;
-        case COMPUTER_PLAYER:
-            index = 0;
-            break;
-        default:
-            index = 1;
-            break;
-    }
-    newEntry[index] = newEntry[index] + 1;
-    resultHistory.push(newEntry);
-    updateVisualisations();
 };
