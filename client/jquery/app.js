@@ -338,22 +338,24 @@ const updateVisualisation1 = () => {
 
 const updateVisualisation2 = () => {
     const vis2 = d3.select('#vis2');
-    vis2.selectAll('path').remove();
     const width = vis2.node().scrollWidth;
     const height = vis2.node().scrollHeight;
     const xScale = d3.scaleLinear().domain([0, resultHistory.length - 1]).range([0, width]);
     const yScale = d3.scaleLinear().domain([0, resultHistory.length - 1]).range([height, 0]);
-    const cols = [0, 1, 2];
     const simpleTracking = (d, index) => d.reduce((acc, n, i) => acc + (i >= index ? n : 0), 0);
-    cols.forEach(col => {
-        const makeArea = d3.area()
-            .x((d, i) => xScale(i))
-            .y0(d => yScale(simpleTracking(d, col) - d[col]))
-            .y1(d => yScale(simpleTracking(d, col)))
-            .curve(d3.curveBasis);
-        vis2
-            .append('path')
-            .attr('d', makeArea(resultHistory))
-            .attr('fill', BAR_COLOURS[col]);
-    });
+    const update = selection => {
+        const makeArea = col =>
+            d3.area()
+                .x((d, i) => xScale(i))
+                .y0(d => yScale(simpleTracking(d, col) - d[col]))
+                .y1(d => yScale(simpleTracking(d, col)))
+                .curve(d3.curveBasis);
+        selection
+            .attr('d', (d, col) => makeArea(col)(resultHistory))
+            .attr('fill', (d, col) => BAR_COLOURS[col]);
+    };
+    const cols = [0, 1, 2];
+    const paths = vis2.selectAll('path').data(cols);
+    update(paths);
+    update(paths.enter().append('path'));
 };
