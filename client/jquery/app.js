@@ -119,7 +119,7 @@ function handleKeydown(e) {
         const newIndex = fn(index);
         if (newIndex >= 0) $cellElements.eq(newIndex).focus();
     };
-    
+
     switch (e.keyCode) {
         case SPACE_KEY:
             makeHumanMove.call(this);
@@ -319,21 +319,45 @@ const updateVisualisations = () => {
 const updateVisualisation1 = () => {
     const resultSummary = lastResultHistoryEntry();
     const vis1 = d3.select('#vis1');
-    const width = vis1.node().scrollWidth;
+    const width = vis1.node().scrollWidth - 60;
     const height = vis1.node().scrollHeight;
     const maxValue = Math.max(d3.max(resultSummary), 10);
     const yScale = d3.scaleLinear().domain([0, 3]).range([0, height]);
     const widthScale = d3.scaleLinear().domain([0, maxValue]).range([0, width]);
     const update = selection =>
         selection
-            .attr('x', 0)
-            .attr('y', (d, i) => yScale(i))
+            .attr('x', 60)
+            .attr('y', (d, i) => yScale(i) + 5)
             .attr('width', d => widthScale(d))
-            .attr('height', height / 3)
+            .attr('height', height / 3 - 10)
             .style('fill', (d, i) => BAR_COLOURS[i]);
     const bars = vis1.selectAll('rect').data(resultSummary);
     update(bars);
     update(bars.enter().append('rect'));
+    const yAxis = d3
+        .axisLeft()
+        .scale(yScale)
+        .tickValues([0, 1, 2])
+        .tickSize(0)
+        .tickFormat(d => {
+            switch (d) {
+                case 0: return `Lost: ${resultSummary[0]}`;
+                case 1: return `Drawn: ${resultSummary[1]}`;
+                case 2: return `Won: ${resultSummary[2]}`;
+            }
+        });
+    vis1.select('#yAxis').remove();
+    const adjustTextLabels = selection => {
+        console.dir(selection);
+        selection
+            .selectAll('text')
+            .attr('transform', `translate(0, ${height / 6})`);
+    };
+    vis1.append('g')
+        .attr('id', 'yAxis')
+        .attr('transform', 'translate(60, 0)')
+        .call(yAxis)
+        .call(adjustTextLabels);
 };
 
 const updateVisualisation2 = () => {
