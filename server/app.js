@@ -3,25 +3,14 @@
 const path = require('path');
 const express = require('express');
 const bodyParser = require("body-parser");
-const engine = require('./engine');
-const port = process.env.PORT || 3000;
+const moveService = require('./moveService');
 
-const apiRouter = express.Router();
-apiRouter.post('/computerMove', handleComputerMove);
+const port = process.env.PORT || 3000;
+const publicFolder = path.join(__dirname, 'public');
 
 const app = express();
-app.use('/', express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
-app.use('/api', apiRouter);
-app.listen(port, () => console.log(`Listening on port ${port}`));
+app.use('/', express.static(publicFolder));
+app.use('/api', moveService.router);
 
-function handleComputerMove(req, res) {
-    
-    const state = req.body;
-    console.log(`request JSON:  ${JSON.stringify(state)}`);
-    
-    const responseData = engine.computerMove(state);
-    console.log(`response JSON: ${JSON.stringify(responseData)}`);
-    
-    return res.json(responseData);
-}
+app.listen(port, () => console.log(`Listening on port ${port}`));
