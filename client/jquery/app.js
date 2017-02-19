@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import * as d3 from 'd3';
+import 'bootstrap/dist/css/bootstrap.css';
 
 const START_GAME_MESSAGE = 'Use the Start button to begin a new game.';
 const PLAYER1_TURN_MESSAGE = 'Your turn. Click an empty square to make your move.';
