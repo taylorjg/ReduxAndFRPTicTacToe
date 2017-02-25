@@ -1,7 +1,7 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-    entry: './client/react/app.js',
+    entry: './client/react/index.js',
     output: {
         path: './server/public/react',
         filename: 'bundle.js',
@@ -17,7 +17,28 @@ module.exports = {
             exclude: /node_modules/,
             loader: 'eslint'
         }],
-        loaders: [{
+        loaders: [
+            {
+                test: /\.css$/,
+                loaders: ['style', 'css']
+            },
+            {
+                test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
+                loader: 'url?limit=10000&mimetype=application/font-woff'
+            },
+            {
+                test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+                loader: 'url?limit=10000&mimetype=application/octet-stream'
+            },
+            {
+                test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+                loader: 'file'
+            },
+            {
+                test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+                loader: 'url?limit=10000&mimetype=image/svg+xml'
+            },
+            {
             test: /\.js$/,
             exclude: /node_modules/,
             loader: 'babel-loader'

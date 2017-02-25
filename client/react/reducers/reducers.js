@@ -1,5 +1,5 @@
-import * as A from './actionTypes';
-import * as C from './constants';
+import * as A from '../actions/actionTypes';
+import * as C from '../constants';
 
 const initialState = {
   gameState: C.STATE_NO_GAME_IN_PROGRESS,
