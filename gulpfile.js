@@ -13,7 +13,8 @@ function makeConfigTuple(configFileName) {
 }
 
 const webPackConfigs = [
-    makeConfigTuple('./webpack.jquery.js')
+    makeConfigTuple('./webpack.jquery.js'),
+    makeConfigTuple('./webpack.react.js')
 ];
 
 function createWebpackTasks() {
