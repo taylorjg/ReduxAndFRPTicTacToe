@@ -10,8 +10,8 @@ export const makeHumanMove = cellIndex => ({
     cellIndex
 });
 
-export const computerMoveStart = board => ({
-    type: A.COMPUTER_MOVE_START,
+export const computerMoveRequest = board => ({
+    type: A.COMPUTER_MOVE_REQUEST,
     board
 });
 
