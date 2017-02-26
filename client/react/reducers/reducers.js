@@ -3,7 +3,8 @@ import * as C from '../constants';
 
 const initialState = {
   gameState: C.STATE_NO_GAME_IN_PROGRESS,
-  board: "---------",
+  board: '---------',
+  infoMessage: C.START_GAME_MESSAGE,
   resultHistory: [
     [0, 0, 0]
   ]
@@ -11,28 +12,50 @@ const initialState = {
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case A.BECOME_GAME_STATE:
-      return { ...state, gameState: action.gameState };
+    case A.START_NEW_GAME:
+      return {
+        ...state,
+        gameState: C.STATE_HUMAN_MOVE,
+        board: '---------',
+        infoMessage: C.HUMAN_TURN_MESSAGE
+      };
+    case A.GAME_OVER:
+      return {
+        ...state,
+        gameState: C.STATE_NO_GAME_IN_PROGRESS,
+        infoMessage: C.START_GAME_MESSAGE,
+        resultHistory: addResultHistoryEntry(state.resultHistory, action.outcome)
+      };
     case A.MAKE_HUMAN_MOVE:
-      return { ...state, board: setCharAt(state.board, C.HUMAN_PIECE, action.cellIndex) };
-    case A.COMPUTER_MOVE_START:
-      return { ...state };
+      return {
+        ...state,
+        board: setCharAt(state.board, C.HUMAN_PIECE, action.cellIndex)
+      };
+    case A.COMPUTER_MOVE_REQUEST:
+      return {
+        ...state,
+        gameState: C.STATE_COMPUTER_MOVE,
+        infoMessage: C.COMPUTER_TURN_MESSAGE
+      };
     case A.COMPUTER_MOVE_SUCCESS:
-      return { ...state };
+      return {
+        ...state
+        // TODO
+      };
     case A.COMPUTER_MOVE_FAILURE:
-      return { ...state };
-    case A.ADD_RESULT:
-      return { ...state, resultHistory: addResultHistoryEntry(state.resultHistory, action.outcome) };
+      return {
+        ...state
+        // TODO
+      };
     default:
       return state;
   }
 };
 
-const OUTCOMES_TO_INDEX = {
-  "C.OUTCOME_HUMAN_WIN": 2,
-  "C.OUTCOME_COMPUTER_WIN": 0,
-  "C.OUTCOME_DRAW": 1
-};
+const OUTCOMES_TO_INDEX = {};
+OUTCOMES_TO_INDEX[C.OUTCOME_HUMAN_WIN] = 2;
+OUTCOMES_TO_INDEX[C.OUTCOME_COMPUTER_WIN] = 0;
+OUTCOMES_TO_INDEX[C.OUTCOME_DRAW] = 1;
 
 const addResultHistoryEntry = (resultHistory, outcome) => {
   const newEntry = [0, 0, 0];

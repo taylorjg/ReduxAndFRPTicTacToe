@@ -1,8 +1,12 @@
 import * as A from './actionTypes';
 
-export const becomeGameState = gameState => ({
-    type: A.BECOME_GAME_STATE,
-    gameState
+export const startNewGame = () => ({
+    type: A.START_NEW_GAME,
+});
+
+export const gameOver = outcome => ({
+    type: A.GAME_OVER,
+    outcome
 });
 
 export const makeHumanMove = cellIndex => ({
@@ -20,12 +24,6 @@ export const computerMoveSuccess = response => ({
     response
 });
 
-export const computerMoveFailure = error => ({
-    type: A.COMPUTER_MOVE_FAILURE,
-    error
-});
-
-export const addResult = outcome => ({
-    type: A.ADD_RESULT,
-    outcome
+export const computerMoveFailure = () => ({
+    type: A.COMPUTER_MOVE_FAILURE
 });

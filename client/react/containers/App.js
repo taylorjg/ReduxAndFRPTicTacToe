@@ -1,11 +1,13 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import * as actions from '../actions';
 import Board from '../components/Board';
 import InfoPanel from '../components/InfoPanel';
 import ErrorPanel from '../components/ErrorPanel';
 
 class App extends Component {
     render() {
+        const props = this.props;
         return (
             <div className="container">
                 <div className="row">
@@ -15,18 +17,25 @@ class App extends Component {
                 </div>
                 <div className="row">
                     <div className="col-md-offset-3 col-md-6">
-                        <InfoPanel />
-                        <ErrorPanel />
+                        <InfoPanel message={props.infoMessage} onStart={() => props.onStart()} />
+                        <ErrorPanel onRetry={() => props.onRetry()} />
                     </div>
                 </div>
             </div>);
     }
 }
 
-const mapStateToProps = (/* state, ownProps */) => ({
+App.propTypes = {
+    infoMessage: PropTypes.string
+};
+
+const mapStateToProps = state => ({
+    infoMessage: state.infoMessage
 });
 
-const mapDispatchToProps = (/* dispatch, ownProps */) => ({
+const mapDispatchToProps = dispatch => ({
+    onStart: () => dispatch(actions.startNewGame()),
+    onRetry: () => { console.log('[onRetry] not implemented yet'); }
 });
 
 export default connect(
