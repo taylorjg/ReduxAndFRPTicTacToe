@@ -1,13 +1,13 @@
 import React, { PropTypes } from 'react';
 
 const Cell = ({
-    id,
+    value,
     onClick
 }) =>
-    <div tabIndex="0" onClick={() => onClick(id)}></div>;
+    <div tabIndex="0" onClick={onClick}>{value}</div>;
 
 Cell.propTypes = {
-    id: PropTypes.number.isRequired,
+    value: PropTypes.string.isRequired,
     onClick: PropTypes.func.isRequired
 };
 

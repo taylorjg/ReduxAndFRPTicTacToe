@@ -9,7 +9,7 @@ const InfoPanel = ({
             <span>{message}</span>
             <img className="spinner hidden" src="../spinner.gif" alt="spinner" />
             <div>
-                <button type="submit" className="btn btn-sm btn-primary" onClick={() => onStart()}>Start</button>
+                <button type="submit" className="btn btn-sm btn-primary" onClick={onStart}>Start</button>
             </div>
         </div>
     </div>;

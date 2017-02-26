@@ -12,13 +12,13 @@ class App extends Component {
             <div className="container">
                 <div className="row">
                     <div className="col-md-offset-4 col-md-4">
-                        <Board onCellClick={cellIndex => console.log(`cellIndex: ${cellIndex}`)} />
+                        <Board board={props.board} onCellClick={props.onCellClick} />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-md-offset-3 col-md-6">
-                        <InfoPanel message={props.infoMessage} onStart={() => props.onStart()} />
-                        <ErrorPanel onRetry={() => props.onRetry()} />
+                        <InfoPanel message={props.infoMessage} onStart={props.onStart} />
+                        <ErrorPanel onRetry={props.onRetry} />
                     </div>
                 </div>
             </div>);
@@ -26,15 +26,18 @@ class App extends Component {
 }
 
 App.propTypes = {
+    board: PropTypes.string.isRequired,
     infoMessage: PropTypes.string
 };
 
 const mapStateToProps = state => ({
+    board: state.board,
     infoMessage: state.infoMessage
 });
 
 const mapDispatchToProps = dispatch => ({
     onStart: () => dispatch(actions.startNewGame()),
+    onCellClick: cellIndex => dispatch(actions.makeHumanMove(cellIndex)),
     onRetry: () => { console.log('[onRetry] not implemented yet'); }
 });
 

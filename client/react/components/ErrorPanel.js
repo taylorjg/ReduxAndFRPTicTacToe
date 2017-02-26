@@ -7,7 +7,7 @@ const ErrorPanel = ({
         <div className="alert alert-danger">
             <span>An error occurred whilst calculating the computer move.</span>
             <div>
-                <button className="btn btn-sm btn-danger" onClick={() => onRetry()}>Retry</button>
+                <button className="btn btn-sm btn-danger" onClick={onRetry}>Retry</button>
                 <img className="spinner hidden" src="../spinner.gif" alt="spinner" />
             </div>
         </div>
