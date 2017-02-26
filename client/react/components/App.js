@@ -7,7 +7,7 @@ const App = () =>
     <div className="container">
         <div className="row">
             <div className="col-md-offset-4 col-md-4">
-                <Board />
+                <Board onCellClick={cellIndex => console.log(`cellIndex: ${cellIndex}`)} />
             </div>
         </div>
         <div className="row">

@@ -27,12 +27,12 @@
     margin-bottom: 10px;
 }
 
-#board .thickBottom td {
-    border-bottom: 2px solid #000;
+#board tr:nth-child(-n+2) {
+    border-bottom: 2px solid black;
 }
 
-#board .thickRight {
-    border-right: 2px solid #000;
+#board td:nth-child(-n+2) {
+    border-right: 2px solid black;
 }
 
 .win {
