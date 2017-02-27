@@ -37,7 +37,10 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     onStart: () => dispatch(actions.startNewGame()),
-    onCellClick: cellIndex => dispatch(actions.makeHumanMove(cellIndex)),
+    onCellClick: cellIndex => {
+        dispatch(actions.makeHumanMove(cellIndex));
+        dispatch(actions.makeComputerMoveAsync('         '));
+    },
     onRetry: () => { console.log('[onRetry] not implemented yet'); }
 });
 
