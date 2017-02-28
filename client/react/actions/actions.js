@@ -28,6 +28,12 @@ export const makeComputerMoveFailure = () => ({
     type: A.MAKE_COMPUTER_MOVE_FAILURE
 });
 
+export const makeHumanMoveAsync = cellIndex => 
+    (dispatch, getState) => {
+        dispatch(makeHumanMove(cellIndex));
+        return dispatch(makeComputerMoveAsync(getState().board));
+    };
+
 export const makeComputerMoveAsync = board =>
     dispatch => {
 

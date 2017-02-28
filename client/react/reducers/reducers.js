@@ -33,18 +33,20 @@ export default (state = initialState, action) => {
         ...state,
         board: setCharAt(state.board, C.HUMAN_PIECE, action.cellIndex)
       };
-    case A.COMPUTER_MOVE_REQUEST:
+    case A.MAKE_COMPUTER_MOVE_REQUEST:
       return {
         ...state,
         gameState: C.STATE_COMPUTER_MOVE,
         infoMessage: C.COMPUTER_TURN_MESSAGE
       };
-    case A.COMPUTER_MOVE_SUCCESS:
+    case A.MAKE_COMPUTER_MOVE_SUCCESS:
       return {
-        ...state
+        ...state,
+        gameState: C.STATE_HUMAN_MOVE,
+        board: action.response.board
         // TODO
       };
-    case A.COMPUTER_MOVE_FAILURE:
+    case A.MAKE_COMPUTER_MOVE_FAILURE:
       return {
         ...state
         // TODO
