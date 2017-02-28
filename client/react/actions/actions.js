@@ -30,8 +30,13 @@ export const makeComputerMoveFailure = () => ({
 
 export const makeHumanMoveAsync = cellIndex => 
     (dispatch, getState) => {
+        const oldBoard = getState().board;
         dispatch(makeHumanMove(cellIndex));
-        return dispatch(makeComputerMoveAsync(getState().board));
+        const newBoard = getState().board;
+        if (newBoard !== oldBoard)
+            return dispatch(makeComputerMoveAsync(getState().board));
+        else
+            return Promise.resolve();
     };
 
 export const makeComputerMoveAsync = board =>

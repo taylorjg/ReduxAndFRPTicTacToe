@@ -29,6 +29,7 @@ export default (state = initialState, action) => {
       };
     case A.MAKE_HUMAN_MOVE:
       if (state.gameState !== C.STATE_HUMAN_MOVE) return state;
+      if (state.board[action.cellIndex] !== C.EMPTY) return state;
       return {
         ...state,
         board: setCharAt(state.board, C.HUMAN_PIECE, action.cellIndex)
@@ -40,16 +41,24 @@ export default (state = initialState, action) => {
         infoMessage: C.COMPUTER_TURN_MESSAGE
       };
     case A.MAKE_COMPUTER_MOVE_SUCCESS:
-      return {
-        ...state,
-        gameState: C.STATE_HUMAN_MOVE,
-        board: action.response.board
-        // TODO
-      };
+      {
+        const newState = {
+          ...state,
+          gameState: C.STATE_HUMAN_MOVE,
+          board: action.response.board
+        };
+        if (action.response.outcome) {
+          newState.gameState = C.STATE_NO_GAME_IN_PROGRESS;
+          newState.infoMessage = C.START_GAME_MESSAGE;
+          newState.outcome = action.response.outcome;
+          newState.winningLine = action.response.winningLine;
+        }
+        return newState;
+      }
     case A.MAKE_COMPUTER_MOVE_FAILURE:
       return {
-        ...state
-        // TODO
+        ...state,
+        gameState: C.STATE_WEB_SERVICE_ERROR
       };
     default:
       return state;
@@ -64,7 +73,7 @@ OUTCOMES_TO_INDEX[C.OUTCOME_DRAW] = 1;
 const addResultHistoryEntry = (resultHistory, outcome) => {
   const newEntry = [0, 0, 0];
   newEntry[OUTCOMES_TO_INDEX[outcome] || 0]++;
-  return [ ...resultHistory, newEntry ];
+  return [...resultHistory, newEntry];
 };
 
 const setCharAt = (s, ch, index) => {
