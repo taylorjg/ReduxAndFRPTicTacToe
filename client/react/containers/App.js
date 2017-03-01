@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import * as C from '../constants';
 import * as actions from '../actions';
 import Board from '../components/Board';
 import InfoPanel from '../components/InfoPanel';
@@ -17,8 +18,9 @@ class App extends Component {
                 </div>
                 <div className="row">
                     <div className="col-md-offset-3 col-md-6">
-                        <InfoPanel message={props.infoMessage} onStart={props.onStart} />
-                        <ErrorPanel onRetry={props.onRetry} />
+                        {(props.gameState === C.STATE_WEB_SERVICE_ERROR)
+                            ? <ErrorPanel onRetry={() => props.onRetry(props.board)} />
+                            : <InfoPanel message={props.infoMessage} onStart={props.onStart} />}
                     </div>
                 </div>
             </div>);
@@ -26,11 +28,13 @@ class App extends Component {
 }
 
 App.propTypes = {
+    gameState: PropTypes.number.isRequired,
     board: PropTypes.string.isRequired,
     infoMessage: PropTypes.string
 };
 
 const mapStateToProps = state => ({
+    gameState: state.gameState,
     board: state.board,
     infoMessage: state.infoMessage
 });
@@ -38,7 +42,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     onStart: () => dispatch(actions.startNewGame()),
     onCellClick: cellIndex => dispatch(actions.makeHumanMoveAsync(cellIndex)),
-    onRetry: () => { console.log('[onRetry] not implemented yet'); }
+    onRetry: board => dispatch(actions.makeComputerMoveAsync(board))
 });
 
 export default connect(

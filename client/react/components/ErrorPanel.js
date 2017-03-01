@@ -3,7 +3,7 @@ import React, { PropTypes } from 'react';
 const ErrorPanel = ({
     onRetry
 }) =>
-    <div className="row hidden">
+    <div className="row">
         <div className="alert alert-danger">
             <span>An error occurred whilst calculating the computer move.</span>
             <div>
