@@ -14,7 +14,13 @@ class App extends Component {
             <div className="container">
                 <div className="row">
                     <div className="col-md-offset-4 col-md-4">
-                        <Board board={props.board} active={active} onCellClick={props.onCellClick} />
+                        <Board
+                            board={props.board}
+                            outcome={props.outcome}
+                            winningLine={props.winningLine}
+                            onCellClick={props.onCellClick}
+                            active={active}
+                        />
                     </div>
                 </div>
                 <div className="row">
@@ -31,12 +37,16 @@ class App extends Component {
 App.propTypes = {
     gameState: PropTypes.number.isRequired,
     board: PropTypes.string.isRequired,
+    outcome: PropTypes.number,
+    winningLine: PropTypes.arrayOf(PropTypes.number),
     infoMessage: PropTypes.string
 };
 
 const mapStateToProps = state => ({
     gameState: state.gameState,
     board: state.board,
+    outcome: state.outcome,
+    winningLine: state.winningLine,
     infoMessage: state.infoMessage
 });
 

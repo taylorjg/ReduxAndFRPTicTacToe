@@ -4,6 +4,8 @@ import * as C from '../constants';
 const initialState = {
   gameState: C.STATE_NO_GAME_IN_PROGRESS,
   board: C.EMPTY.repeat(9),
+  outcome: undefined,
+  winningLine: undefined,
   infoMessage: C.START_GAME_MESSAGE,
   resultHistory: [
     [0, 0, 0]
@@ -18,6 +20,8 @@ export default (state = initialState, action) => {
         ...state,
         gameState: C.STATE_HUMAN_MOVE,
         board: C.EMPTY.repeat(9),
+        outcome: undefined,
+        winningLine: undefined,
         infoMessage: C.HUMAN_TURN_MESSAGE
       };
     case A.GAME_OVER:

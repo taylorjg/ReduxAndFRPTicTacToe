@@ -4,10 +4,10 @@ const moveEngine = require('./moveEngine');
 const handleComputerMove = (req, res) => {
     
     const state = req.body;
-    console.log(`request JSON:  ${JSON.stringify(state)}`);
+    console.log(`request:  ${JSON.stringify(state)}`);
     
     const responseData = moveEngine.computerMove(state);
-    console.log(`response JSON: ${JSON.stringify(responseData)}`);
+    console.log(`response: ${JSON.stringify(responseData)}`);
     
     return res.json(responseData);
 };

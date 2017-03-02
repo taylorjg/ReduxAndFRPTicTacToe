@@ -11,6 +11,11 @@ export const OUTCOME_HUMAN_WIN = 1;
 export const OUTCOME_COMPUTER_WIN = 2;
 export const OUTCOME_DRAW = 3;
 
+export const HIGHLIGHT_NONE = 0;
+export const HIGHLIGHT_HUMAN_WIN = 1;
+export const HIGHLIGHT_COMPUTER_WIN = 2;
+export const HIGHLIGHT_DRAW = 3;
+
 export const START_GAME_MESSAGE = 'Use the Start button to begin a new game.';
 export const HUMAN_TURN_MESSAGE = 'Your turn. Click an empty square to make your move.';
 export const COMPUTER_TURN_MESSAGE = 'The computer is thinking...';
