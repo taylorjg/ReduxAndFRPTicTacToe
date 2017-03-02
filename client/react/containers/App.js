@@ -9,11 +9,12 @@ import ErrorPanel from '../components/ErrorPanel';
 class App extends Component {
     render() {
         const props = this.props;
+        const active = props.gameState !== C.STATE_NO_GAME_IN_PROGRESS;
         return (
             <div className="container">
                 <div className="row">
                     <div className="col-md-offset-4 col-md-4">
-                        <Board board={props.board} onCellClick={props.onCellClick} />
+                        <Board board={props.board} active={active} onCellClick={props.onCellClick} />
                     </div>
                 </div>
                 <div className="row">
