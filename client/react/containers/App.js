@@ -26,8 +26,8 @@ class App extends Component {
                 <div className="row">
                     <div className="col-md-offset-3 col-md-6">
                         {(props.gameState === C.STATE_WEB_SERVICE_ERROR)
-                            ? <ErrorPanel onRetry={() => props.onRetry(props.board)} />
-                            : <InfoPanel message={props.infoMessage} onStart={props.onStart} />}
+                            ? <ErrorPanel showSpinner={props.showSpinner} onRetry={() => props.onRetry(props.board)} />
+                            : <InfoPanel showSpinner={props.showSpinner} message={props.infoMessage} onStart={props.onStart} />}
                     </div>
                 </div>
             </div>);
@@ -39,7 +39,8 @@ App.propTypes = {
     board: PropTypes.string.isRequired,
     outcome: PropTypes.number,
     winningLine: PropTypes.arrayOf(PropTypes.number),
-    infoMessage: PropTypes.string
+    infoMessage: PropTypes.string,
+    showSpinner: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -47,7 +48,8 @@ const mapStateToProps = state => ({
     board: state.board,
     outcome: state.outcome,
     winningLine: state.winningLine,
-    infoMessage: state.infoMessage
+    infoMessage: state.infoMessage,
+    showSpinner: state.showSpinner
 });
 
 const mapDispatchToProps = dispatch => ({

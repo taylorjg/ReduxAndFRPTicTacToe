@@ -7,6 +7,7 @@ const initialState = {
   outcome: undefined,
   winningLine: undefined,
   infoMessage: C.START_GAME_MESSAGE,
+  showSpinner: false,
   resultHistory: [
     [0, 0, 0]
   ]
@@ -15,6 +16,7 @@ const initialState = {
 export default (state = initialState, action) => {
   console.log(`action: ${JSON.stringify(action)}`);
   switch (action.type) {
+
     case A.START_NEW_GAME:
       return {
         ...state,
@@ -24,6 +26,7 @@ export default (state = initialState, action) => {
         winningLine: undefined,
         infoMessage: C.HUMAN_TURN_MESSAGE
       };
+
     case A.GAME_OVER:
       return {
         ...state,
@@ -31,6 +34,7 @@ export default (state = initialState, action) => {
         infoMessage: C.START_GAME_MESSAGE,
         resultHistory: addResultHistoryEntry(state.resultHistory, action.outcome)
       };
+
     case A.MAKE_HUMAN_MOVE:
       if (state.gameState !== C.STATE_HUMAN_MOVE) return state;
       if (state.board[action.cellIndex] !== C.EMPTY) return state;
@@ -38,18 +42,22 @@ export default (state = initialState, action) => {
         ...state,
         board: setCharAt(state.board, C.HUMAN_PIECE, action.cellIndex)
       };
+
     case A.MAKE_COMPUTER_MOVE_REQUEST:
       return {
         ...state,
         gameState: C.STATE_COMPUTER_MOVE,
-        infoMessage: C.COMPUTER_TURN_MESSAGE
+        infoMessage: C.COMPUTER_TURN_MESSAGE,
+        showSpinner: true,
       };
+
     case A.MAKE_COMPUTER_MOVE_SUCCESS:
       {
         const newState = {
           ...state,
           gameState: C.STATE_HUMAN_MOVE,
-          board: action.response.board
+          board: action.response.board,
+          showSpinner: false,
         };
         if (action.response.outcome) {
           newState.gameState = C.STATE_NO_GAME_IN_PROGRESS;
@@ -59,11 +67,14 @@ export default (state = initialState, action) => {
         }
         return newState;
       }
+
     case A.MAKE_COMPUTER_MOVE_FAILURE:
       return {
         ...state,
-        gameState: C.STATE_WEB_SERVICE_ERROR
+        gameState: C.STATE_WEB_SERVICE_ERROR,
+        showSpinner: false,
       };
+
     default:
       return state;
   }
