@@ -42,11 +42,13 @@ export const startNewGameAsync = () =>
 
 export const makeHumanMoveAsync = cellIndex =>
     (dispatch, getState) => {
-        const oldBoard = getState().board;
+        const oldState = getState();
+        if (oldState.gameState !== C.STATE_HUMAN_MOVE) return Promise.resolve();
+        if (oldState.board[cellIndex] !== C.CELL_EMPTY) return Promise.resolve();
         dispatch(makeHumanMove(cellIndex));
-        const newBoard = getState().board;
-        if (newBoard !== oldBoard)
-            return dispatch(makeComputerMoveAsync(getState().board));
+        const newState = getState();
+        if (newState.board !== oldState.board)
+            return dispatch(makeComputerMoveAsync(newState.board));
         else
             return Promise.resolve();
     };

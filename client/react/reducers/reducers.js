@@ -35,8 +35,6 @@ export default (state = initialState, action) => {
             };
 
         case A.MAKE_HUMAN_MOVE:
-            if (state.gameState !== C.STATE_HUMAN_MOVE) return state;
-            if (state.board[action.cellIndex] !== C.CELL_EMPTY) return state;
             return {
                 ...state,
                 board: setCharAt(state.board, C.CELL_HUMAN_PIECE, action.cellIndex)
