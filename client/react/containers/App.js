@@ -9,7 +9,7 @@ import ErrorPanel from '../components/ErrorPanel';
 class App extends Component {
     render() {
         const props = this.props;
-        const active = props.gameState !== C.STATE_NO_GAME_IN_PROGRESS;
+        const active = props.gameState !== C.STATE_NO_GAME_IN_PROGRESS && props.gameState !== C.STATE_WEB_SERVICE_ERROR;
         return (
             <div className="container">
                 <div className="row">

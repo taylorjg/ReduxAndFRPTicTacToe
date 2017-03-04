@@ -11,7 +11,14 @@ const InfoPanel = ({
             <span>{MESSAGES[gameState]}</span>
             {showSpinner && <img className="spinner" src="../spinner.gif" alt="spinner" />}
             <div>
-                <button type="submit" className="btn btn-sm btn-primary" onClick={onStart}>Start</button>
+                <button
+                    type="submit"
+                    className="btn btn-sm btn-primary"
+                    onClick={onStart}
+                    ref={el => gameState === C.STATE_NO_GAME_IN_PROGRESS && el && el.focus()}
+                >
+                    Start
+                </button>
             </div>
         </div>
     </div>;
