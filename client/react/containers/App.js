@@ -51,7 +51,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    onStart: () => dispatch(actions.startNewGame()),
+    onStart: () => dispatch(actions.startNewGameAsync()),
     onCellClick: cellIndex => dispatch(actions.makeHumanMoveAsync(cellIndex)),
     onRetry: board => dispatch(actions.makeComputerMoveAsync(board))
 });
