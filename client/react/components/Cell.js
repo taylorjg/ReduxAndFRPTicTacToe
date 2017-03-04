@@ -15,7 +15,15 @@ const Cell = ({
     if (highlightClassName) {
         conditionalAttributes.className = highlightClassName;
     }
-    return <div {...conditionalAttributes} onClick={onClick}>{value}</div>;
+    return (
+        <div
+            {...conditionalAttributes}
+            onClick={onClick}
+            onKeyDown={e => e.keyCode === C.KEYCODE_SPACE && onClick()}
+        >
+            {value}
+        </div>
+    );
 };
 
 Cell.propTypes = {
