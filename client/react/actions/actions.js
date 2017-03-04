@@ -29,6 +29,11 @@ export const makeComputerMoveFailure = () => ({
     type: A.MAKE_COMPUTER_MOVE_FAILURE
 });
 
+export const navigateToCell = cellIndex => ({
+    type: A.NAVIGATE_TO_CELL,
+    cellIndex
+});
+
 export const startNewGameAsync = () =>
     (dispatch, getState) => {
         dispatch(startNewGame());

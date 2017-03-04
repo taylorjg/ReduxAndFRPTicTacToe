@@ -7,6 +7,7 @@ const initialState = {
     outcome: undefined,
     winningLine: undefined,
     showSpinner: false,
+    setFocusTo: C.SETFOCUSTO_START_BUTTON,
     resultHistory: [
         [0, 0, 0]
     ]
@@ -22,7 +23,8 @@ export default (state = initialState, action) => {
                 gameState: C.STATE_HUMAN_MOVE,
                 board: initialState.board,
                 outcome: initialState.outcome,
-                winningLine: initialState.winningLine
+                winningLine: initialState.winningLine,
+                setFocusTo: C.SETFOCUSTO_BOARD_CELL_4
             };
 
         case A.GAME_OVER:
@@ -31,20 +33,22 @@ export default (state = initialState, action) => {
                 gameState: C.STATE_NO_GAME_IN_PROGRESS,
                 outcome: action.outcome,
                 winningLine: action.winningLine,
+                setFocusTo: C.SETFOCUSTO_START_BUTTON,
                 resultHistory: addResultHistoryEntry(state.resultHistory, action.outcome)
             };
 
         case A.MAKE_HUMAN_MOVE:
             return {
                 ...state,
-                board: setCharAt(state.board, C.CELL_HUMAN_PIECE, action.cellIndex)
+                board: setCharAt(state.board, C.CELL_HUMAN_PIECE, action.cellIndex),
+                setFocusTo: C.SETFOCUSTO_NONE
             };
 
         case A.MAKE_COMPUTER_MOVE_REQUEST:
             return {
                 ...state,
                 gameState: C.STATE_COMPUTER_MOVE,
-                showSpinner: true,
+                showSpinner: true
             };
 
         case A.MAKE_COMPUTER_MOVE_SUCCESS:
@@ -52,7 +56,7 @@ export default (state = initialState, action) => {
                 ...state,
                 gameState: C.STATE_HUMAN_MOVE,
                 board: action.response.board,
-                showSpinner: false,
+                showSpinner: false
             };
 
         case A.MAKE_COMPUTER_MOVE_FAILURE:
@@ -60,6 +64,13 @@ export default (state = initialState, action) => {
                 ...state,
                 gameState: C.STATE_WEB_SERVICE_ERROR,
                 showSpinner: false,
+                setFocusTo: C.SETFOCUSTO_RETRY_BUTTON
+            };
+
+        case A.NAVIGATE_TO_CELL:
+            return {
+                ...state,
+                setFocusTo: C.SETFOCUSTO_BOARD_CELL_0 + action.cellIndex
             };
 
         default:

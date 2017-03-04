@@ -4,6 +4,7 @@ import * as C from '../constants';
 const InfoPanel = ({
     gameState,
     showSpinner,
+    setFocus,
     onStart
 }) =>
     <div>
@@ -15,7 +16,7 @@ const InfoPanel = ({
                     type="submit"
                     className="btn btn-sm btn-primary"
                     onClick={onStart}
-                    ref={el => gameState === C.STATE_NO_GAME_IN_PROGRESS && el && el.focus()}
+                    ref={el => setFocus && el && el.focus()}
                 >
                     Start
                 </button>
@@ -26,6 +27,7 @@ const InfoPanel = ({
 InfoPanel.propTypes = {
     gameState: PropTypes.number.isRequired,
     showSpinner: PropTypes.bool.isRequired,
+    setFocus: PropTypes.bool.isRequired,
     onStart: PropTypes.func.isRequired
 };
 

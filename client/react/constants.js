@@ -25,3 +25,21 @@ export const KEYCODE_UP_ARROW = 38;
 export const KEYCODE_DOWN_ARROW = 40;
 export const KEYCODE_LEFT_ARROW = 37;
 export const KEYCODE_RIGHT_ARROW = 39;
+
+export const DIRECTION_UP = 0;
+export const DIRECTION_DOWN = 1;
+export const DIRECTION_LEFT = 2;
+export const DIRECTION_RIGHT = 3;
+
+export const SETFOCUSTO_NONE = 0;
+export const SETFOCUSTO_START_BUTTON = 1;
+export const SETFOCUSTO_RETRY_BUTTON = 2;
+export const SETFOCUSTO_BOARD_CELL_0 = 3;
+export const SETFOCUSTO_BOARD_CELL_1 = 4;
+export const SETFOCUSTO_BOARD_CELL_2 = 5;
+export const SETFOCUSTO_BOARD_CELL_3 = 6;
+export const SETFOCUSTO_BOARD_CELL_4 = 7;
+export const SETFOCUSTO_BOARD_CELL_5 = 8;
+export const SETFOCUSTO_BOARD_CELL_6 = 9;
+export const SETFOCUSTO_BOARD_CELL_7 = 10;
+export const SETFOCUSTO_BOARD_CELL_8 = 11;

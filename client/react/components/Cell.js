@@ -4,8 +4,10 @@ import * as C from '../constants';
 const Cell = ({
     value,
     active,
+    setFocus,
     highlight,
-    onClick
+    onClick,
+    onNavigateTo
 }) => {
     const conditionalAttributes = {};
     if (active) {
@@ -19,7 +21,16 @@ const Cell = ({
         <div
             {...conditionalAttributes}
             onClick={onClick}
-            onKeyDown={e => e.keyCode === C.KEYCODE_SPACE && onClick()}
+            onKeyDown={e => {
+                switch (e.keyCode) {
+                    case C.KEYCODE_SPACE: return onClick();
+                    case C.KEYCODE_UP_ARROW: return onNavigateTo(C.DIRECTION_UP);
+                    case C.KEYCODE_DOWN_ARROW: return onNavigateTo(C.DIRECTION_DOWN);
+                    case C.KEYCODE_LEFT_ARROW: return onNavigateTo(C.DIRECTION_LEFT);
+                    case C.KEYCODE_RIGHT_ARROW: return onNavigateTo(C.DIRECTION_RIGHT);
+                }
+            }}
+            ref={el => setFocus && el && el.focus()}
         >
             {value}
         </div>
@@ -29,8 +40,10 @@ const Cell = ({
 Cell.propTypes = {
     value: PropTypes.string.isRequired,
     active: PropTypes.bool.isRequired,
+    setFocus: PropTypes.bool.isRequired,
     highlight: PropTypes.number.isRequired,
-    onClick: PropTypes.func.isRequired
+    onClick: PropTypes.func.isRequired,
+    onNavigateTo: PropTypes.func.isRequired
 };
 
 const HIGHLIGHT_CLASS_NAMES = {

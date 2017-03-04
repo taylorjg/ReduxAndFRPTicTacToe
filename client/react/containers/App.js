@@ -19,15 +19,26 @@ class App extends Component {
                             outcome={props.outcome}
                             winningLine={props.winningLine}
                             onCellClick={props.onCellClick}
+                            onNavigateTo={props.onNavigateTo}
                             active={active}
+                            setFocusTo={props.setFocusTo}
                         />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-md-offset-3 col-md-6">
                         {(props.gameState === C.STATE_WEB_SERVICE_ERROR)
-                            ? <ErrorPanel showSpinner={props.showSpinner} onRetry={() => props.onRetry(props.board)} />
-                            : <InfoPanel showSpinner={props.showSpinner} onStart={props.onStart} gameState={props.gameState} />}
+                            ? <ErrorPanel
+                                showSpinner={props.showSpinner}
+                                setFocus={props.setFocusTo === C.SETFOCUSTO_RETRY_BUTTON}
+                                onRetry={() => props.onRetry(props.board)}
+                            />
+                            : <InfoPanel
+                                showSpinner={props.showSpinner}
+                                setFocus={props.setFocusTo === C.SETFOCUSTO_START_BUTTON}
+                                onStart={props.onStart}
+                                gameState={props.gameState}
+                            />}
                     </div>
                 </div>
             </div>);
@@ -39,7 +50,12 @@ App.propTypes = {
     board: PropTypes.string.isRequired,
     outcome: PropTypes.number,
     winningLine: PropTypes.arrayOf(PropTypes.number),
-    showSpinner: PropTypes.bool.isRequired
+    showSpinner: PropTypes.bool.isRequired,
+    setFocusTo: PropTypes.number.isRequired,
+    onStart: PropTypes.func.isRequired,
+    onCellClick: PropTypes.func.isRequired,
+    onRetry: PropTypes.func.isRequired,
+    onNavigateTo: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -47,13 +63,15 @@ const mapStateToProps = state => ({
     board: state.board,
     outcome: state.outcome,
     winningLine: state.winningLine,
-    showSpinner: state.showSpinner
+    showSpinner: state.showSpinner,
+    setFocusTo: state.setFocusTo
 });
 
 const mapDispatchToProps = dispatch => ({
     onStart: () => dispatch(actions.startNewGameAsync()),
     onCellClick: cellIndex => dispatch(actions.makeHumanMoveAsync(cellIndex)),
-    onRetry: board => dispatch(actions.makeComputerMoveAsync(board))
+    onRetry: board => dispatch(actions.makeComputerMoveAsync(board)),
+    onNavigateTo: cellIndex => dispatch(actions.navigateToCell(cellIndex))
 });
 
 export default connect(

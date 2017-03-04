@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 
 const ErrorPanel = ({
     showSpinner,
+    setFocus,
     onRetry
 }) =>
     <div className="row">
@@ -11,7 +12,7 @@ const ErrorPanel = ({
                 <button
                     className="btn btn-sm btn-danger"
                     onClick={onRetry}
-                    ref={el => el && el.focus()}
+                    ref={el => setFocus && el && el.focus()}
                 >
                     Retry
                 </button>
@@ -22,6 +23,7 @@ const ErrorPanel = ({
 
 ErrorPanel.propTypes = {
     showSpinner: PropTypes.bool.isRequired,
+    setFocus: PropTypes.bool.isRequired,
     onRetry: PropTypes.func.isRequired
 };
 
