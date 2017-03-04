@@ -5,9 +5,10 @@ export const startNewGame = () => ({
     type: A.START_NEW_GAME,
 });
 
-export const gameOver = outcome => ({
+export const gameOver = (outcome, winningLine) => ({
     type: A.GAME_OVER,
-    outcome
+    outcome,
+    winningLine
 });
 
 export const makeHumanMove = cellIndex => ({
@@ -71,6 +72,19 @@ export const makeComputerMoveAsync = board =>
 
         return fetch('/api/computerMove', request)
             .then(response => response.json())
-            .then(response => dispatch(makeComputerMoveSuccess(response)))
+            .then(response => {
+                dispatch(makeComputerMoveSuccess(response));
+                dispatch(gameOverAsync(response));
+            })
             .catch(() => dispatch(makeComputerMoveFailure()));
+    };
+
+const gameOverAsync = response =>
+    dispatch => {
+        if (response.outcome) {
+            dispatch(gameOver(response.outcome, response.winningLine));
+        }
+        else {
+            return Promise.resolve();
+        }
     };
