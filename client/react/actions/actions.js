@@ -46,8 +46,8 @@ export const makeComputerMoveAsync = board =>
 
         const requestData = {
             board,
-            player1Piece: C.HUMAN_PIECE,
-            player2Piece: C.COMPUTER_PIECE
+            player1Piece: C.CELL_HUMAN_PIECE,
+            player2Piece: C.CELL_COMPUTER_PIECE
         };
 
         const request = {

@@ -3,7 +3,7 @@ import * as C from '../constants';
 
 const initialState = {
   gameState: C.STATE_NO_GAME_IN_PROGRESS,
-  board: C.EMPTY.repeat(9),
+  board: C.CELL_EMPTY.repeat(9),
   outcome: undefined,
   winningLine: undefined,
   infoMessage: C.START_GAME_MESSAGE,
@@ -21,7 +21,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         gameState: C.STATE_HUMAN_MOVE,
-        board: C.EMPTY.repeat(9),
+        board: C.CELL_EMPTY.repeat(9),
         outcome: undefined,
         winningLine: undefined,
         infoMessage: C.HUMAN_TURN_MESSAGE
@@ -37,10 +37,10 @@ export default (state = initialState, action) => {
 
     case A.MAKE_HUMAN_MOVE:
       if (state.gameState !== C.STATE_HUMAN_MOVE) return state;
-      if (state.board[action.cellIndex] !== C.EMPTY) return state;
+      if (state.board[action.cellIndex] !== C.CELL_EMPTY) return state;
       return {
         ...state,
-        board: setCharAt(state.board, C.HUMAN_PIECE, action.cellIndex)
+        board: setCharAt(state.board, C.CELL_HUMAN_PIECE, action.cellIndex)
       };
 
     case A.MAKE_COMPUTER_MOVE_REQUEST:

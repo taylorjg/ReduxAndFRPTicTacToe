@@ -11,7 +11,7 @@ const Cell = ({
     if (active) {
         conditionalAttributes.tabIndex = '0';
     }
-    const highlightClassName = highlightToClassName(highlight);
+    const highlightClassName = HIGHLIGHT_CLASS_NAMES[highlight];
     if (highlightClassName) {
         conditionalAttributes.className = highlightClassName;
     }
@@ -25,13 +25,10 @@ Cell.propTypes = {
     onClick: PropTypes.func.isRequired
 };
 
-const highlightToClassName = highlight => {
-    switch (highlight) {
-        case C.HIGHLIGHT_HUMAN_WIN: return 'win';
-        case C.HIGHLIGHT_COMPUTER_WIN: return 'lose';
-        case C.HIGHLIGHT_DRAW: return 'draw';
-        default: return null;
-    }
+const HIGHLIGHT_CLASS_NAMES = {
+    [C.HIGHLIGHT_HUMAN_WIN]: 'win',
+    [C.HIGHLIGHT_COMPUTER_WIN]: 'lose',
+    [C.HIGHLIGHT_DRAW]: 'draw'
 };
 
 export default Cell;
