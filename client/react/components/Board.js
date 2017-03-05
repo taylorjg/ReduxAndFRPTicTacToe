@@ -6,22 +6,22 @@ const Board = ({
     board,
     outcome,
     winningLine,
-    onCellClick,
+    onSelectCell,
     onNavigateTo,
     active,
     setFocusTo
 }) => {
     const highlights = outcomeToHighlights(outcome, winningLine);
     const cells = indices =>
-        indices.map(idx =>
-            <td key={idx}>
+        indices.map(index =>
+            <td key={index}>
                 <Cell
-                    value={board[idx]}
+                    value={board[index]}
                     active={active}
-                    setFocus={setFocusTo === C.SETFOCUSTO_BOARD_CELL_0 + idx}
-                    highlight={highlights[idx]}
-                    onClick={() => onCellClick(idx)}
-                    onNavigateTo={direction => onNavigateTo(nextCellIndex(direction, idx))}
+                    setFocus={setFocusTo === C.SETFOCUSTO_BOARD_CELL_0 + index}
+                    highlight={highlights[index]}
+                    onSelect={() => onSelectCell(index)}
+                    onNavigate={direction => onNavigateTo(nextCellIndex(direction, index))}
                 />
             </td>
         );
@@ -43,7 +43,7 @@ Board.propTypes = {
     board: PropTypes.string.isRequired,
     outcome: PropTypes.number,
     winningLine: PropTypes.arrayOf(PropTypes.number),
-    onCellClick: PropTypes.func.isRequired,
+    onSelectCell: PropTypes.func.isRequired,
     onNavigateTo: PropTypes.func.isRequired,
     active: PropTypes.bool.isRequired,
     setFocusTo: PropTypes.number.isRequired

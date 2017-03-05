@@ -18,7 +18,7 @@ class App extends Component {
                             board={props.board}
                             outcome={props.outcome}
                             winningLine={props.winningLine}
-                            onCellClick={props.onCellClick}
+                            onSelectCell={props.onSelectCell}
                             onNavigateTo={props.onNavigateTo}
                             active={active}
                             setFocusTo={props.setFocusTo}
@@ -54,7 +54,7 @@ App.propTypes = {
     showSpinner: PropTypes.bool.isRequired,
     setFocusTo: PropTypes.number.isRequired,
     onStart: PropTypes.func.isRequired,
-    onCellClick: PropTypes.func.isRequired,
+    onSelectCell: PropTypes.func.isRequired,
     onRetry: PropTypes.func.isRequired,
     onNavigateTo: PropTypes.func.isRequired
 };
@@ -71,7 +71,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     onStart: () => dispatch(actions.startNewGameAsync()),
-    onCellClick: cellIndex => dispatch(actions.makeHumanMoveAsync(cellIndex)),
+    onSelectCell: cellIndex => dispatch(actions.makeHumanMoveAsync(cellIndex)),
     onRetry: board => dispatch(actions.makeComputerMoveAsync(board)),
     onNavigateTo: cellIndex => dispatch(actions.navigateToCell(cellIndex))
 });

@@ -35,16 +35,19 @@
     border-right: 2px solid black;
 }
 
-.win {
+.won {
     color: green;
+    background-color: rgba(0, 255, 0, 0.2);
 }
 
-.lose {
-    color: red;
-}
-
-.draw {
+.drawn {
     color: #FFBF00;
+    background-color: rgba(255, 191, 0, 0.2);
+}
+
+.lost {
+    color: red;
+    background-color: rgba(255, 0, 0, 0.2);
 }
 
 .alert > div {
@@ -54,5 +57,4 @@
 svg {
     width: 100%;
     height: 100%;
-    /* background-color: lightgrey; */
 }

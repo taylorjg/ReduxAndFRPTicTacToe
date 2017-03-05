@@ -23,10 +23,10 @@ const STATE_HUMAN_MOVE = 1;
 const STATE_COMPUTER_MOVE = 2;
 const STATE_WEB_SERVICE_ERROR = 3;
 
-const HIGHLIGHT_WIN = 'win';
-const HIGHLIGHT_LOSS = 'lose';
-const HIGHLIGHT_DRAW = 'draw';
-const ALL_HIGHLIGHTS = `${HIGHLIGHT_WIN} ${HIGHLIGHT_LOSS} ${HIGHLIGHT_DRAW}`;
+const HIGHLIGHT_WON = 'won';
+const HIGHLIGHT_DRAWN = 'drawn';
+const HIGHLIGHT_LOST = 'lost';
+const ALL_HIGHLIGHTS = `${HIGHLIGHT_WON} ${HIGHLIGHT_DRAWN} ${HIGHLIGHT_LOST}`;
 
 let state;
 let $cellElements;
@@ -189,13 +189,13 @@ function handleComputerMoveResponse(response) {
         if (state.outcome) {
             switch (state.outcome) {
                 case HUMAN_PLAYER:
-                    highlightCells(state.winningLine, HIGHLIGHT_WIN);
+                    highlightCells(state.winningLine, HIGHLIGHT_WON);
                     break;
                 case COMPUTER_PLAYER:
-                    highlightCells(state.winningLine, HIGHLIGHT_LOSS);
+                    highlightCells(state.winningLine, HIGHLIGHT_LOST);
                     break;
                 default:
-                    highlightCells(Array.from(Array(9).keys()), HIGHLIGHT_DRAW);
+                    highlightCells(Array.from(Array(9).keys()), HIGHLIGHT_DRAWN);
                     break;
             }
             setStateNoGameInProgress();

@@ -6,8 +6,8 @@ const Cell = ({
     active,
     setFocus,
     highlight,
-    onClick,
-    onNavigateTo
+    onSelect,
+    onNavigate
 }) => {
     const conditionalAttributes = {};
     if (active) {
@@ -20,14 +20,14 @@ const Cell = ({
     return (
         <div
             {...conditionalAttributes}
-            onClick={onClick}
-            onKeyDown={e => {
-                switch (e.keyCode) {
-                    case C.KEYCODE_SPACE: return onClick();
-                    case C.KEYCODE_UP_ARROW: return onNavigateTo(C.DIRECTION_UP);
-                    case C.KEYCODE_DOWN_ARROW: return onNavigateTo(C.DIRECTION_DOWN);
-                    case C.KEYCODE_LEFT_ARROW: return onNavigateTo(C.DIRECTION_LEFT);
-                    case C.KEYCODE_RIGHT_ARROW: return onNavigateTo(C.DIRECTION_RIGHT);
+            onClick={onSelect}
+            onKeyDown={ev => {
+                switch (ev.keyCode) {
+                    case C.KEYCODE_SPACE: return onSelect();
+                    case C.KEYCODE_UP_ARROW: return onNavigate(C.DIRECTION_UP);
+                    case C.KEYCODE_DOWN_ARROW: return onNavigate(C.DIRECTION_DOWN);
+                    case C.KEYCODE_LEFT_ARROW: return onNavigate(C.DIRECTION_LEFT);
+                    case C.KEYCODE_RIGHT_ARROW: return onNavigate(C.DIRECTION_RIGHT);
                 }
             }}
             ref={el => setFocus && el && el.focus()}
@@ -42,14 +42,14 @@ Cell.propTypes = {
     active: PropTypes.bool.isRequired,
     setFocus: PropTypes.bool.isRequired,
     highlight: PropTypes.number.isRequired,
-    onClick: PropTypes.func.isRequired,
-    onNavigateTo: PropTypes.func.isRequired
+    onSelect: PropTypes.func.isRequired,
+    onNavigate: PropTypes.func.isRequired
 };
 
 const HIGHLIGHT_CLASS_NAMES = {
-    [C.HIGHLIGHT_HUMAN_WIN]: 'win',
-    [C.HIGHLIGHT_COMPUTER_WIN]: 'lose',
-    [C.HIGHLIGHT_DRAW]: 'draw'
+    [C.HIGHLIGHT_HUMAN_WIN]: 'won',
+    [C.HIGHLIGHT_COMPUTER_WIN]: 'lost',
+    [C.HIGHLIGHT_DRAW]: 'drawn'
 };
 
 export default Cell;
