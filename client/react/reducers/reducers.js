@@ -3,6 +3,7 @@ import * as C from '../constants';
 
 const initialState = {
     gameState: C.STATE_NO_GAME_IN_PROGRESS,
+    webServiceError: false,
     board: C.CELL_EMPTY.repeat(9),
     outcome: undefined,
     winningLine: undefined,
@@ -55,6 +56,7 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 gameState: C.STATE_HUMAN_MOVE,
+                webServiceError: false,
                 board: action.response.board,
                 showSpinner: false
             };
@@ -62,7 +64,7 @@ export default (state = initialState, action) => {
         case A.MAKE_COMPUTER_MOVE_FAILURE:
             return {
                 ...state,
-                gameState: C.STATE_WEB_SERVICE_ERROR,
+                webServiceError: true,
                 showSpinner: false,
                 setFocusTo: C.SETFOCUSTO_RETRY_BUTTON
             };

@@ -1,7 +1,6 @@
 export const STATE_NO_GAME_IN_PROGRESS = 0;
 export const STATE_HUMAN_MOVE = 1;
 export const STATE_COMPUTER_MOVE = 2;
-export const STATE_WEB_SERVICE_ERROR = 3;
 
 export const CELL_EMPTY = ' ';
 export const CELL_HUMAN_PIECE = 'X';

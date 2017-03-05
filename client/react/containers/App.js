@@ -9,7 +9,7 @@ import ErrorPanel from '../components/ErrorPanel';
 class App extends Component {
     render() {
         const props = this.props;
-        const active = props.gameState !== C.STATE_NO_GAME_IN_PROGRESS && props.gameState !== C.STATE_WEB_SERVICE_ERROR;
+        const active = props.gameState !== C.STATE_NO_GAME_IN_PROGRESS && !props.webServiceError;
         return (
             <div className="container">
                 <div className="row">
@@ -27,7 +27,7 @@ class App extends Component {
                 </div>
                 <div className="row">
                     <div className="col-md-offset-3 col-md-6">
-                        {(props.gameState === C.STATE_WEB_SERVICE_ERROR)
+                        {(props.webServiceError)
                             ? <ErrorPanel
                                 showSpinner={props.showSpinner}
                                 setFocus={props.setFocusTo === C.SETFOCUSTO_RETRY_BUTTON}
@@ -47,6 +47,7 @@ class App extends Component {
 
 App.propTypes = {
     gameState: PropTypes.number.isRequired,
+    webServiceError: PropTypes.bool.isRequired,
     board: PropTypes.string.isRequired,
     outcome: PropTypes.number,
     winningLine: PropTypes.arrayOf(PropTypes.number),
@@ -60,6 +61,7 @@ App.propTypes = {
 
 const mapStateToProps = state => ({
     gameState: state.gameState,
+    webServiceError: state.webServiceError,
     board: state.board,
     outcome: state.outcome,
     winningLine: state.winningLine,
