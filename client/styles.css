@@ -1,9 +1,12 @@
-#errorPanel {
-    margin-top: 20px;
+h1 {
+    text-align: center;
 }
 
 #board {
-    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #board td {
@@ -20,11 +23,6 @@
     font-family: Courier New, Courier, monospace;
     vertical-align: middle;
     text-align: center;
-}
-
-#board table {
-    margin-top: 10px;
-    margin-bottom: 10px;
 }
 
 #board tr:nth-child(-n+2) {
